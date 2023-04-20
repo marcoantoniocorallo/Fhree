@@ -1,0 +1,2 @@
+fun f (n:int) : int = n*n
+in f "c"

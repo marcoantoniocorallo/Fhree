@@ -1,0 +1,8 @@
+fun idx(x : int -> int) : int->int = x in
+(* [fun [idx](1) = [x](2) in](3) *)
+
+	fun idy(y : int) : int = y in
+	(* [fun [idy](4) = [y](5) in](6) *)
+
+	idx idy
+	(* [ [idx](7) [idy](8) ](9) *)

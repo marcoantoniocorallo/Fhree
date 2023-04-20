@@ -1,0 +1,8 @@
+fun fact (n:int) :int = 
+  if n<=1 then 1 else n*(fact (n-1)) in 
+  	let x = 5 in 
+  		let y = 10 in 
+  		if x<y then
+			let z = x+y in fact(z)
+  		else
+			let z = x-y in fact(z)

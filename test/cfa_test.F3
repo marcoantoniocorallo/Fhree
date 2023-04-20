@@ -1,0 +1,27 @@
+(*
+fun f (x:int) :int = x+1 in
+fun g (x:int) :int = f x in 
+fun h (x:int) :int = x*2 in h 3 *)
+
+(*
+fun g (x: int) : int = x+1 in 
+fun f (x : int) : int = g (x * 2) in
+fun h (x : int) : int = f x
+in g 2 *)
+
+(*
+fun f (x: int) : int = x+2 in 
+fun g (x: int) : int = x+1 in 
+(if true then f else g) 5 *)
+
+
+//(if true then fun f (x: int) : int = x+2 in f else fun g (x: int) : int = x+1 in g )5 
+
+(*
+(fun f (x: int) : int = x+2 in 
+fun g (x: int) : int = x+1 in f) 5 *)
+
+(*
+fun f (x: int) : int = x+2 in 
+fun g (x: int) : int->int = f in 
+(g 5) 5 *)

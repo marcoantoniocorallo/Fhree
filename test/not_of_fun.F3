@@ -1,0 +1,1 @@
+not( fun f (x:int) : bool = true in f 0 )

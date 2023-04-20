@@ -1,0 +1,2 @@
+fun f (a : int -> (int*int)) : int -> (int*int) = a
+in f 

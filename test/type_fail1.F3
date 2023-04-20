@@ -1,0 +1,3 @@
+let add1 = 5 in 
+let add2 = 'c' in 
+add1+add2
