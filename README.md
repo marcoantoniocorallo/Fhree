@@ -106,13 +106,15 @@ Expressible and denotable values are
 
 In addition to the *type analysis*, Fhree does a step of *control-flow-analysis*, using a *fix-point* algorithm. The result of the analysis of a file *f* is writed into a file *f*.cfa.
 
-The CFA can be skipped passing the option `--no-cfa`, as you can read in the usage message. There is also an option to do **only** the CFA, using Fhree as an analyzer.
+The CFA can be skipped passing the option `--no-cfa`, as you can read in the usage message. 
+
+There is also an option to do **only** the CFA, using Fhree as an analyzer.
 
 #### Requirements
 
 Fhree is developed using OCaml and some OCaml tools for generating lexer and parser. For building the project, you must have these tools installed in your environment.
 
-- *OCaml* and *opam*: follow the official [instruction]([Get Up and Running With OCaml · OCaml Tutorials](https://ocaml.org/docs/up-and-running#installation-for-unix)) for you platform
+- *OCaml* and *opam*: follow the [official instruction](https://ocaml.org/docs/up-and-running#installation-for-unix) for you platform
 
 - *Menhir* once you have installed opam, just run `opam install menhir`
 
