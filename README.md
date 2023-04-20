@@ -1,4 +1,4 @@
-![](https://github.com/marcoantoniocorallo/Fhree/blob/main/cover.png)
+![](https://github.com/marcoantoniocorallo/Fhree/blob/main/cover_1.png)
 
 # Fhree
 
