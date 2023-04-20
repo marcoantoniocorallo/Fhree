@@ -4,11 +4,12 @@
 
 Fhree is a *reference implementation* of a small *strongly typed* functional language, it is *interpreted* and it implements the *big-step operational* semantics.
 
-It is the result of some excercises for the [*Languages, Compilers and Interpreters*]([GitHub - lillo/compiler-course-unipi: Lab of the course Languages, Compilers and Interpreters (Cod. 653AA) @ UNIPI](https://github.com/lillo/compiler-course-unipi)) course @ [*UniPi*](https://di.unipi.it/), and it's an extension of the *FUN* language shown by [Prof. Galletta]([lillo (Letterio Galletta) · GitHub](https://github.com/lillo)) during the lectures.
+It is the result of some excercises for the [*Languages, Compilers and Interpreters*](https://github.com/lillo/compiler-course-unipi) course @ [*UniPi*](https://di.unipi.it/), and it's an extension of the *FUN* language shown by [Prof. Galletta](https://github.com/lillo) during the lectures.
 
 The language is strongly inspired by [*OCaml*](https://ocaml.org/), with some syntactical differences and simplifications.
 
 The name Fhree is a word pun derived from the original language's name *FUN*.
+
 Fun probably states for "*Functional*", but it can also mean "*having fun*", so the word pun would be "*Fun for fun*", whose acronym is *FFF* $\rightarrow$ *F3* $\rightarrow$ *F Three* $\rightarrow$ *F(h)ree*.
 
 ---
@@ -66,7 +67,7 @@ Furthermore, it provides **homogeneous** *lists* of values and **heterogeneous**
 | int     | `-5`, `0`, `42`                    | `+` `-` `*` `/` `%`         | Arithmetic operations on ints                                                                 |
 | float   | `0.15`, `.0002`,`0.1e-22`,         | `+.` `-.` `*.` `/.`         | Arithmetic operations on floats                                                               |
 | string  | `"Hello World"`                    | `^`                         | Concatenation of strings                                                                      |
-| boolean | `true`, `false`                    | `&&` `\|                    | `                                                                                             |
+| boolean | `true`, `false`                    | `&&` `\|\|`                 |                                                                                              |
 | tuple   | `('a', 0, "hi!")`,`(0,1)`          | `proj t i`                  | Projection of the *i*-th element of *t*                                                       |
 | list    | `[2, 4, 6, 8]`, `[]`, `["Hello!"]` | `hd l` <br/>`tl`<br/>`e::l` | Get the first element of *l*<br/>Get *l* without the first element<br/>Add *e* in head of *l* |
 
