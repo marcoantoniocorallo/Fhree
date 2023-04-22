@@ -17,7 +17,7 @@
 %token IF THEN ELSE
 %token TINT TBOOL TFLOAT TCHAR TSTRING TLIST
 %token LET IN 
-%token FUN
+%token FUN LAMBDA
 %token LPAREN "(" RPAREN ")"
 %token LBRACKET "[" RBRACKET "]"
 %token PLUS "+" MINUS "-" TIMES "*" DIV "/" MOD "%"
@@ -63,6 +63,8 @@ expr:
     { Let(id, t, e1, e2) |@| $loc }
 | FUN f = ID "(" n = ID ":" t1 = ptype ")" ":" t2 = ptype "=" e1 = expr IN e2 = expr  %prec prec_let
     { Letfun(f, n, Tfun(t1, t2), e1, e2) |@| $loc }
+| LAMBDA "(" n = ID ":" t1 = ptype ")" ":" t2 = ptype "->" e = expr  %prec prec_let
+    { Lambda(n, Tfun(t1, t2), e) |@| $loc }
 | f = func
     { f }
 | PROJ t = simple_expr i = simple_expr                             

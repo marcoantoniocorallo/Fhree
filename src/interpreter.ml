@@ -100,6 +100,7 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 	| Letfun(f, x, _, fBody, letBody) -> 
 		let bodyEnv = (f, Closure(f, x, fBody, env)) :: env in
 		eval letBody bodyEnv
+  | Lambda(x, _, fBody) -> Closure("",x, fBody, env)
 	| Call(eFun, eArg) ->
 		let fClosure = eval eFun env in
 		(match fClosure with

@@ -1,0 +1,1 @@
+(lambda (x : int) : int -> 2*x ) 5

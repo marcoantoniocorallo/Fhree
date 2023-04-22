@@ -59,6 +59,7 @@ type exp =
 	| Letfun of ide * ide * ttype * located_exp * located_exp 
                                                     (* Fun declaration 
                                                     (f, x, type of f, fBody, letBody)  *)
+  | Lambda of ide * ttype * located_exp             (* lambda (x, type of f, body) *)
 	| Call of located_exp * located_exp               (* Fun application *)
 	| Tup of located_exp sequence			 				 	 			(* Heterogeneous Fixed-length list of expressions *)
 	| Proj of located_exp * located_exp               (* i-th element of tuple *)

@@ -39,7 +39,8 @@
     | Let of var * aexpr * aexpr
     | Prim of string * aexpr * aexpr
     | If of aexpr * aexpr * aexpr
-    | Letfun of var * var * aexpr * aexpr             
+    | Letfun of var * var * aexpr * aexpr
+    | Lambda of var * aexpr     
     | Call of aexpr * aexpr
     | Tup of aexpr sequence			 				 	 			
     | Proj of aexpr * aexpr               
@@ -88,6 +89,10 @@
       let abody = transform ((fvar.name, fvar.id)::(xvar.name, xvar.id)::env) body in
       let aexp  = transform ((fvar.name, fvar.id)::env) exp in
       Letfun(fvar, xvar, abody, aexp) |> mk_aexpr
+    | Syntax.Lambda(x, _, body) -> 
+      let xvar = { name = x; id = next_label () } in
+      let abody = transform ((xvar.name, xvar.id)::env) body in
+      Lambda(xvar, abody) |> mk_aexpr
     | Syntax.Call(e1, e2) ->
       let ae1 = transform env e1 in
       let ae2 = transform env e2 in
@@ -163,6 +168,7 @@
       | If(e1, e2, e3) ->  acc |> f_aux e1 |> f_aux e2 |> f_aux e3
       | Letfun(f, x, body, exp) ->
         (f,x,body)::acc |> f_aux body |> f_aux exp
+      | Lambda(x, body) -> ({name = ""; id = (e.l);},x,body)::acc |> f_aux body
       | Tup(t)
       | Lst(t) -> 
         let rec f t acc = match t with
@@ -204,6 +210,11 @@
             (* maps each constraint cc in body to a constraint ( {on} < R(body.label) ==> cc )*)
             (addHyp ([reachable] @^ ReachVar(body.l)) (f_aux body []))@acc'
             |> f_aux exp
+      | Lambda(x, body) -> 
+        let acc' = 
+          ( [{name = ""; id = (e.l);}] @^ CacheVar(e.l) ) :: acc in 
+          (addHyp ([reachable] @^ ReachVar(body.l)) (f_aux body []))@acc'
+          |> f_aux body
       | Call(e1, e2) ->
         let acc' = List.fold_left (fun cs (f,x,e') ->
             (* for each fun: if fun in e1.label ==> {on} < R(body.label) *)

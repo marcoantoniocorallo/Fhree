@@ -1,0 +1,64 @@
+Annotated expression:
+
+{ Cfa.t =
+  (Cfa.Let ({ Cfa.name = "t"; id = 11 },
+     { Cfa.t =
+       (Cfa.Tup
+          (Syntax.Cons ({ Cfa.t = (Cfa.CstI 1); l = 1 },
+             (Syntax.Cons ({ Cfa.t = (Cfa.CstI 3); l = 2 },
+                (Syntax.Cons (
+                   { Cfa.t =
+                     (Cfa.Lambda ({ Cfa.name = "x"; id = 3 },
+                        { Cfa.t =
+                          (Cfa.Prim ("+",
+                             { Cfa.t =
+                               (Cfa.Prim ("*",
+                                  { Cfa.t = (Cfa.CstI 2); l = 4 },
+                                  { Cfa.t =
+                                    (Cfa.Var { Cfa.name = "x"; id = 3 });
+                                    l = 5 }
+                                  ));
+                               l = 6 },
+                             { Cfa.t = (Cfa.CstI 1); l = 7 }));
+                          l = 8 }
+                        ));
+                     l = 9 },
+                   Syntax.Nil))
+                ))
+             )));
+       l = 10 },
+     { Cfa.t =
+       (Cfa.Call (
+          { Cfa.t =
+            (Cfa.Proj (
+               { Cfa.t = (Cfa.Var { Cfa.name = "t"; id = 11 }); l = 12 },
+               { Cfa.t = (Cfa.CstI 2); l = 13 }));
+            l = 14 },
+          { Cfa.t = (Cfa.CstI 5); l = 15 }));
+       l = 16 }
+     ));
+  l = 17 }
+
+Generated constraints:
+
+r(t:11) ⊆ C(12)
+
+{ { Cfa.name = ""; id = 9 } } ⊆ C(14) ⟼ { { Cfa.name = "on"; id = 0 } } ⊆ R(8)
+
+{ { Cfa.name = ""; id = 9 } } ⊆ C(14) ⟼ C(15) ⊆ r(x:3)
+
+{ { Cfa.name = ""; id = 9 } } ⊆ C(14) ⟼ C(8) ⊆ C(16)
+
+r(x:3) ⊆ C(5)
+
+{ { Cfa.name = "on"; id = 0 } } ⊆ R(8) ⟼ r(x:3) ⊆ C(5)
+
+{ { Cfa.name = ""; id = 9 } } ⊆ C(9)
+
+C(10) ⊆ r(t:11)
+
+C(16) ⊆ C(17)
+
+Solution:
+
+C(9) =: [{ Cfa.name = ""; id = 9 } ]

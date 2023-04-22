@@ -97,6 +97,12 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
       else
       raise (Type_Error("\"TFun-Rule\": Return type does not match"^(string_of_loc (e.loc))))
     |_ -> raise (Type_Error("\"TFun-Rule\": Function type does not match"^(string_of_loc (e.loc)))) )
+  | Lambda(x, fun_type, body) -> 
+    (match fun_type with Tfun(t1,t2) ->
+      let gamma' = (x, t1) :: gamma in 
+      if (type_of gamma' body) = t2 then Tfun(t1,t2)
+      else raise (Type_Error("\"TFun-Rule\": Body type does not match"^(string_of_loc (body.loc))))
+    |_ -> raise (Type_Error("\"TFun-Rule\": Function type does not match"^(string_of_loc (body.loc)))))
   | Call(e1, e2) ->
     let t1 = type_of gamma e1 in
     let t2 = type_of gamma e2 in

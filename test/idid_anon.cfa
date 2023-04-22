@@ -1,0 +1,49 @@
+Annotated expression:
+
+{ Cfa.t =
+  (Cfa.Call (
+     { Cfa.t =
+       (Cfa.Lambda ({ Cfa.name = "x"; id = 1 },
+          { Cfa.t = (Cfa.Var { Cfa.name = "x"; id = 1 }); l = 2 }));
+       l = 3 },
+     { Cfa.t =
+       (Cfa.Lambda ({ Cfa.name = "y"; id = 4 },
+          { Cfa.t = (Cfa.Var { Cfa.name = "y"; id = 4 }); l = 5 }));
+       l = 6 }
+     ));
+  l = 7 }
+
+Generated constraints:
+
+r(y:4) ⊆ C(5)
+
+{ { Cfa.name = "on"; id = 0 } } ⊆ R(5) ⟼ r(y:4) ⊆ C(5)
+
+{ { Cfa.name = ""; id = 6 } } ⊆ C(6)
+
+r(x:1) ⊆ C(2)
+
+{ { Cfa.name = "on"; id = 0 } } ⊆ R(2) ⟼ r(x:1) ⊆ C(2)
+
+{ { Cfa.name = ""; id = 3 } } ⊆ C(3)
+
+{ { Cfa.name = ""; id = 3 } } ⊆ C(3) ⟼ { { Cfa.name = "on"; id = 0 } } ⊆ R(2)
+
+{ { Cfa.name = ""; id = 3 } } ⊆ C(3) ⟼ C(6) ⊆ r(x:1)
+
+{ { Cfa.name = ""; id = 3 } } ⊆ C(3) ⟼ C(2) ⊆ C(7)
+
+{ { Cfa.name = ""; id = 6 } } ⊆ C(3) ⟼ { { Cfa.name = "on"; id = 0 } } ⊆ R(5)
+
+{ { Cfa.name = ""; id = 6 } } ⊆ C(3) ⟼ C(6) ⊆ r(y:4)
+
+{ { Cfa.name = ""; id = 6 } } ⊆ C(3) ⟼ C(5) ⊆ C(7)
+
+Solution:
+
+C(2) =: [{ Cfa.name = ""; id = 6 } ]
+C(7) =: [{ Cfa.name = ""; id = 6 } ]
+C(3) =: [{ Cfa.name = ""; id = 3 } ]
+r(x:1) =: [{ Cfa.name = ""; id = 6 } ]
+R(2) =: [{ Cfa.name = "on"; id = 0 } ]
+C(6) =: [{ Cfa.name = ""; id = 6 } ]

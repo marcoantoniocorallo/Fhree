@@ -26,13 +26,14 @@
 		tbl
 
 	let keyword_table =
-		create_hashtable 20 [
+		create_hashtable 22 [
 			("if", 	IF);
 			("then",THEN);
 			("else",ELSE);
 			("let",	LET);
 			("in",	IN);
 			("fun",	FUN);
+      ("lambda",LAMBDA);
 			("!", NOT);
       ("&&", AND);
       ("||", OR);
