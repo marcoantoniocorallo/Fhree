@@ -1,0 +1,1 @@
+fun sum (a : int) (b : int) : int = a+b in sum 5 6

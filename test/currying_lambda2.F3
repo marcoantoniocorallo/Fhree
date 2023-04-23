@@ -1,0 +1,3 @@
+(lambda (a : int) (b : char list) (c : (int * float * string) ) (d : (string) ) (e : (string -> string)) : (int * string)
+ -> (2*a+(proj c 0), (e d))
+) 3 ['a','b','c'] (10, 10.0, "10") "this string!" (lambda (x : string) : string -> x^" - "^x )

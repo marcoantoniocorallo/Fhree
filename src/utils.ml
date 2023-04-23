@@ -39,6 +39,18 @@ let reverse (t : 'a sequence) : 'a sequence =
 	in r t Nil
 ;;
 
+(** string_of_collection c: returns a string s representing c
+  @param t : a collection to be parsed
+  @return a string representing t    
+ *)
+let string_of_collection t string_of= 
+    let rec f t acc = match t with
+      | Nil -> acc
+      | Cons(x, Nil) -> (acc^(string_of x))
+      | Cons(x, xs) -> f xs (acc^(string_of x)^"; ")
+    in f t ""
+;;
+
 (** string_of_value v: returns a string s representing v
   @param v : a value to be parsed
   @return a string representing v
@@ -49,14 +61,24 @@ let rec string_of_value (v : value) : string = match v with
   |Bool k -> string_of_bool k
   |Char k -> String.make 1 k
   |String s -> s
-  |Tuple(t) -> string_of_collection t
-  |ListV(l) -> string_of_collection l
-  |Closure(f, x, body, env) -> "Closure of "^f^" "^x
-and string_of_collection t = 
-    let rec f t acc = match t with
-      |Nil -> acc
-      |Cons(x, xs) -> f xs (acc^(string_of_value x)^" ")
-    in f t ""
+  |Tuple(t) -> string_of_collection t (string_of_value)
+  |ListV(l) -> string_of_collection l (string_of_value)
+  |Closure(f, x, body, env) -> "Closure of "^f
+;;
+
+(** string_of_ttype t: returns a string s representing t
+  @param t : a ttype to be parsed
+  @return a string representing t
+*)
+let rec string_of_ttype (t : ttype) : string = match t with
+  | Tint -> "Tint"
+  | Tbool -> "Tbool"
+  | Tfloat -> "Tfloat"
+  | Tchar -> "Tchar"
+  | Tstring -> "Tstring"
+  | Tfun(t1,t2) -> ((string_of_ttype t1)^" -> "^(string_of_ttype t2))
+  | Ttuple tt -> string_of_collection tt (string_of_ttype)
+  | Tlist tt -> (if (Option.is_some tt) then (string_of_ttype (Option.get tt)) else "Empty")^" list"
 ;;
 
 (** string_of_position p returns a string representing the position p

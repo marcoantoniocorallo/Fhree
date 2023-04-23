@@ -33,14 +33,6 @@ fun fact n =
 in fact 5
 ```
 
-Functions takes *one and only one* argument and multiple-arguments functions are computable through its *curried* form.
-
-```ocaml
-fun concat s1 = 
-  fun concat2 s2 = s1^s2 in concat2 
-in concat "Hello " "World"
-```
-
 In order to have a *strong type system*, functions declaration make use of mandatory *type annotations*.
 
 ```ocaml
@@ -51,9 +43,7 @@ in fact 5
 ```
 
 ```ocaml
-fun concat (s1 : string) : string -> string = 
-    fun concat2 (s2 : string) : string = s1^s2 in concat2 
-in concat "Hello " "World"
+(lambda (s : string) : string -> " with annotation") "lambda"
 ```
 
 Type annotations are available in every construct, but optionally.
@@ -69,7 +59,7 @@ Furthermore, it provides **homogeneous** *lists* of values and **heterogeneous**
 | int     | `-5`, `0`, `42`                    | `+` `-` `*` `/` `%`         | Arithmetic operations on ints                                                                 |
 | float   | `0.15`, `.0002`,`0.1e-22`,         | `+.` `-.` `*.` `/.`         | Arithmetic operations on floats                                                               |
 | string  | `"Hello World"`                    | `^`                         | Concatenation of strings                                                                      |
-| boolean | `true`, `false`                    | `&&` `\|\|`                 |                                                                                              |
+| boolean | `true`, `false`                    | `&&` `\|\|`                 |                                                                                               |
 | tuple   | `('a', 0, "hi!")`,`(0,1)`          | `proj t i`                  | Projection of the *i*-th element of *t*                                                       |
 | list    | `[2, 4, 6, 8]`, `[]`, `["Hello!"]` | `hd l` <br/>`tl`<br/>`e::l` | Get the first element of *l*<br/>Get *l* without the first element<br/>Add *e* in head of *l* |
 
@@ -145,8 +135,6 @@ Options:
 
 - Free variables
 
-- Uncurried functions definitions
-
 - Unification algorithm for removing the mandatory type annotation in fun definitions
 
 - Another unification algorithm for an implementation of *pattern matching*
@@ -154,3 +142,19 @@ Options:
 - REPL
 
 - Code generation for a simple compilation
+
+- ~~Uncurried functions definitions~~ 
+  Multiple-argument function definition are now available!
+  They make use of *currying*: they are parsed and converted in the corresponding *curried* - single-argument - functions: a function f 
+  
+  ```ocaml
+  fun f (a : t1) (b : t2) (c :t3) : tf = body;;
+  ```
+  
+  is internally converted into
+  
+  ```ocaml
+  fun f (a : t1) : (t2 -> t3 -> tf) -> 
+      lambda (b : t2) : (t3 -> tf) -> 
+          lambda (c : t3) : tf -> body
+  ```

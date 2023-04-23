@@ -5,6 +5,31 @@
     (** Infix operator for creating a located exp from an exp and a location *)
     let (|@|) value loc = { value = value; loc = loc }
 
+    (* Facilities for computing currying *)
+    let fold_types l t_final = 
+        List.fold_right (fun t final -> Tfun(t, final) ) l t_final;;
+
+    let fold_lambdas ides types f_body t_final loc = 
+      let count = ref (List.length types) in 
+      List.fold_right2 (
+        fun x t body -> 
+          decr count;
+          Lambda(
+            x,
+            Tfun(t, ( fold_types (List.filteri (fun i y -> i>=(!count) ) (List.tl types) ) t_final ) ), 
+            (body|@|loc)
+          )
+        ) (List.tl ides) (List.tl types) (f_body.value)
+    ;;
+
+    let curry l t e loc = 
+      let ides, types = List.split l in 
+      let first_arg = List.hd ides in
+      let types_folded = List.fold_right (fun t final -> Tfun(t, final) ) types t in
+      let lambdas_folded = fold_lambdas ides types e t loc in 
+      (first_arg, types_folded, lambdas_folded)
+    ;;
+
 %}
 
 (** Tokens definition *)
@@ -51,52 +76,80 @@ main:
 expr:
 | e = simple_expr
     { e }
+
 | "!" e = simple_expr
     { Not(e) |@| $loc }
+
 | "-" e = simple_expr
     { Not(e) |@| $loc }
+
 | e1 = expr op = binop e2 = expr
     { Prim(e1, op, e2) |@| $loc }
+
 | IF guard = expr THEN e1 = expr ELSE e2 = expr      %prec prec_let
     { If(guard,e1,e2) |@| $loc }
+
 | LET id = ID t = option(preceded(":", ptype)) "=" e1 = expr IN e2 = expr   %prec prec_let
     { Let(id, t, e1, e2) |@| $loc }
-| FUN f = ID "(" n = ID ":" t1 = ptype ")" ":" t2 = ptype "=" e1 = expr IN e2 = expr  %prec prec_let
-    { Letfun(f, n, Tfun(t1, t2), e1, e2) |@| $loc }
-| LAMBDA "(" n = ID ":" t1 = ptype ")" ":" t2 = ptype "->" e = expr  %prec prec_let
-    { Lambda(n, Tfun(t1, t2), e) |@| $loc }
+
+| FUN f = ID l = nonempty_list(delimited("(",separated_pair(ID, ":", ptype),")")) 
+    ":" t_res = ptype "=" e1 = expr IN e2 = expr  %prec prec_let
+    { 
+      let (first_arg, types_folded, lambdas_folded) = curry l t_res e1 ($loc) in 
+      Letfun(f, first_arg, types_folded, (lambdas_folded |@| $loc), e2) |@| $loc 
+    }
+
+| LAMBDA l = nonempty_list(delimited("(",separated_pair(ID, ":", ptype),")")) 
+    ":" t_res = ptype "->" e = expr  %prec prec_let
+    { 
+      let (first_arg, types_folded, lambdas_folded) = curry l t_res e ($loc) in 
+      Lambda(first_arg, types_folded, (lambdas_folded |@| $loc)) |@| $loc 
+    }
+    
 | f = func
     { f }
+
 | PROJ t = simple_expr i = simple_expr                             
     { Proj(t,i) |@| $loc }
+
 | e = simple_expr "::" l = simple_expr
     { Cons_op(e,l) |@| $loc }
+
 | HEAD l = simple_expr
     { Head(l) |@| $loc }
+
 | TAIL l = simple_expr
     { Tail(l) |@| $loc }
-
+    
 (** simple_expr is a syntactical category used for disambiguing the grammar. *)
 simple_expr:
 | "(" e = expr ")"
     { e }
+
 | i = INT
     { CstI(i) |@| $loc }
+
 | b = BOOL
     { CstB(b) |@| $loc }
+
 | c = CHAR
     { CstC(c) |@| $loc }
+
 | f = FLOAT
     { CstF(f) |@| $loc }
+
 | s = STRING
     { CstS(s) |@| $loc } 
+
 | id = ID
     { Var(id) |@| $loc }
+
 | t = tuple
     { Tup(t) |@| $loc }
+
 | l = lst 
     { Lst(l) |@| $loc }
-
+    
 (** Fun Call and composition *)
 (** The arg of the function is a simple_expr, that is an identifier, a literal,
     or a complex expression surrounded by parentheses 
@@ -104,6 +157,7 @@ simple_expr:
 func:
 | f = simple_expr e = simple_expr
     { Call(f,e) |@| $loc }
+
 | f = func e = simple_expr
     { Call(f,e) |@| $loc }
 
@@ -116,12 +170,14 @@ tuple:
 lst:
 | "[" "]"
     { Nil }
+
 | "[" s = sequence "]"
     { s }
 
 sequence:
 | e = expr "," s = sequence
     { Cons(e, s) }
+
 | e = expr 
     { Cons(e, Nil) }
 
@@ -129,8 +185,10 @@ sequence:
 ptype:
   | t = simple_ptype
     { t }
+
   | "(" t = ptype "*" s = ptype_sequence ")"
     { Ttuple(Cons(t,s)) }
+
   | t1 = ptype "->" t2 = ptype
     { Tfun(t1, t2) }
 
@@ -140,22 +198,29 @@ ptype:
 simple_ptype:
   | TINT
     { Tint }
+
   | TBOOL
     { Tbool }
+
   | TCHAR
     { Tchar }
+
   | TFLOAT
     { Tfloat }
+
   | TSTRING
     { Tstring }
+
   | t=option(simple_ptype) TLIST
     { Tlist(t) }
+
   | "(" t=ptype ")"
     { t }
 
 ptype_sequence:
   | t = ptype "*" s = ptype_sequence
     { Cons(t, s) }
+
   | t = ptype 
     { Cons(t, Nil) }
 
