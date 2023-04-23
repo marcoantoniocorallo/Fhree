@@ -1,0 +1,5 @@
+(* "lambda" |> (lambda (s : string) : string -> s^" with annotations") *)
+
+( "lambda" 
+  |> lambda (s : string) : string -> s^" with annotations"
+) |> (lambda (s : string) : string -> s^" and other annotations")

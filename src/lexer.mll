@@ -98,6 +98,7 @@ rule tokenize = parse
   | "::"              { CONS_OP }
   | ":"               { COLON }
   | "->"              { ARROW }
+  | "|>"              { PIPE }
 	| "(*"							{ comments 0 lexbuf }
   | "//" [^ '\n']*    (* eat up one-line comments *)
   | white             (* eat up whitespace *)

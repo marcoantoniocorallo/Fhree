@@ -42,7 +42,7 @@
 %token IF THEN ELSE
 %token TINT TBOOL TFLOAT TCHAR TSTRING TLIST
 %token LET IN 
-%token FUN LAMBDA
+%token FUN LAMBDA PIPE "|>"
 %token LPAREN "(" RPAREN ")"
 %token LBRACKET "[" RBRACKET "]"
 %token PLUS "+" MINUS "-" TIMES "*" DIV "/" MOD "%"
@@ -159,6 +159,9 @@ func:
     { Call(f,e) |@| $loc }
 
 | f = func e = simple_expr
+    { Call(f,e) |@| $loc }
+
+| e = simple_expr "|>" f = simple_expr
     { Call(f,e) |@| $loc }
 
 (** A tuple must have at least two elements  *)
