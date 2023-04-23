@@ -41,7 +41,7 @@ in fact 5
 ```
 
 ```ocaml
-(lambda (s : string) : string -> " with annotation") "lambda"
+"lambda" |> lambda (s : string) : string -> " with annotation"
 ```
 
 Type annotations are available in every construct, but optionally.
