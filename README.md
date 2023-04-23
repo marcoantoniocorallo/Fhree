@@ -1,9 +1,7 @@
-# Fhree
-
 ![](https://github.com/marcoantoniocorallo/Fhree/blob/main/cover_1.png)
 
 ---
-
+# Fhree
 Fhree is a *reference implementation* of a small *strongly typed* functional language, it is *interpreted* and it implements the *big-step operational* semantics.
 
 It is the result of some excercises for the [*Languages, Compilers and Interpreters*](https://github.com/lillo/compiler-course-unipi) course @ [*UniPi*](https://di.unipi.it/), and it's an extension of the *FUN* language shown by [Prof. Galletta](https://github.com/lillo) during the lectures.
@@ -144,6 +142,7 @@ Options:
 - Code generation for a simple compilation
 
 - ~~Uncurried functions definitions~~ 
+
   Multiple-argument function definition are now available!
   They make use of *currying*: they are parsed and converted in the corresponding *curried* - single-argument - functions: a function f 
   
