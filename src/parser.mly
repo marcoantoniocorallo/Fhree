@@ -60,7 +60,7 @@
  *)
 
 %nonassoc prec_let (* shifts! *)
-%right "->"
+%right "->" 
 %left "=" "<" ">" "<=" ">=" "<>" "&&" "||"
 %left "+" "-" "^" "+." "-."
 %left "*" "/" "%" "*." "/."
@@ -162,6 +162,9 @@ func:
     { Call(f,e) |@| $loc }
 
 | e = simple_expr "|>" f = simple_expr
+    { Call(f,e) |@| $loc }
+
+| e = func "|>" f = simple_expr
     { Call(f,e) |@| $loc }
 
 (** A tuple must have at least two elements  *)
