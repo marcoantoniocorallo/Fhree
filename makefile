@@ -15,5 +15,6 @@ clear: clean
 clean:
 	rm -fr _build
 	rm -fr _install
+	rm -f ./Fhree
 
 .PHONY: all build install clear clean
