@@ -2,3 +2,5 @@ Fhree.opam
 _build/
 .vscode/
 Fhree
+todo
+*.cfa

@@ -39,7 +39,7 @@
     | Let of var * aexpr * aexpr
     | Prim of string * aexpr * aexpr
     | If of aexpr * aexpr * aexpr
-    | Letfun of var * var * aexpr * aexpr
+    | Fun of var * var * aexpr
     | Lambda of var * aexpr     
     | Call of aexpr * aexpr
     | Tup of aexpr sequence			 				 	 			
@@ -83,12 +83,11 @@
       let ae2 = transform env e2 in
       let ae3 = transform env e3 in
       If(ae1, ae2, ae3) |> mk_aexpr
-    | Syntax.Letfun(f, x, _, body, exp) ->
+    | Syntax.Fun(f, x, _, body) ->
       let fvar = { name = f; id = next_label () } in
       let xvar = { name = x; id = next_label () } in
       let abody = transform ((fvar.name, fvar.id)::(xvar.name, xvar.id)::env) body in
-      let aexp  = transform ((fvar.name, fvar.id)::env) exp in
-      Letfun(fvar, xvar, abody, aexp) |> mk_aexpr
+      Fun(fvar, xvar, abody) |> mk_aexpr
     | Syntax.Lambda(x, _, body) -> 
       let xvar = { name = x; id = next_label () } in
       let abody = transform ((xvar.name, xvar.id)::env) body in
@@ -166,8 +165,8 @@
       | Prim(_, e1, e2)
       | Call(e1, e2) -> acc |> f_aux e1 |> f_aux e2
       | If(e1, e2, e3) ->  acc |> f_aux e1 |> f_aux e2 |> f_aux e3
-      | Letfun(f, x, body, exp) ->
-        (f,x,body)::acc |> f_aux body |> f_aux exp
+      | Fun(f, x, body) ->
+        (f,x,body)::acc |> f_aux body
       | Lambda(x, body) -> ({name = ""; id = (e.l);},x,body)::acc |> f_aux body
       | Tup(t)
       | Lst(t) -> 
@@ -203,13 +202,11 @@
       | If(e1, e2, e3) ->
         let acc' = (CacheVar(e2.l) @< CacheVar(e.l)) :: (CacheVar(e3.l) @< CacheVar(e.l)) :: acc in
         acc' |> f_aux e1 |> f_aux e2 |> f_aux e3
-      | Letfun(f, _, body, exp) -> 
+      | Fun(f, _, body) -> 
         let acc' = 
-            ( [f] @^ IdVar(f) ) :: 
-            ( (CacheVar(exp.l) @< CacheVar(e.l)) ) :: acc in 
+            ( [f] @^ IdVar(f) ) :: acc in 
             (* maps each constraint cc in body to a constraint ( {on} < R(body.label) ==> cc )*)
             (addHyp ([reachable] @^ ReachVar(body.l)) (f_aux body []))@acc'
-            |> f_aux exp
       | Lambda(_, body) -> 
         let acc' = 
           ( [{name = ""; id = (e.l);}] @^ CacheVar(e.l) ) :: acc in 

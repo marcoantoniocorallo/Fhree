@@ -95,7 +95,10 @@ expr:
     ":" t_res = ptype "=" e1 = expr IN e2 = expr  %prec prec_let
     { 
       let (first_arg, types_folded, lambdas_folded) = curry l t_res e1 ($loc) in 
-      Letfun(f, first_arg, types_folded, (lambdas_folded |@| $loc), e2) |@| $loc 
+      Let(f, Some (types_folded), 
+        Fun(f, first_arg, types_folded, (lambdas_folded |@| $loc)) |@| $loc,
+        e2
+      ) |@| $loc 
     }
 
 | LAMBDA l = nonempty_list(delimited("(",separated_pair(ID, ":", ptype),")")) 

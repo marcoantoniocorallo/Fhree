@@ -89,11 +89,10 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
       raise (Type_Error ("\"IF-Rule\": if with no a boolean guard"^(string_of_loc (e.loc))))
     (* x : tx, Γ |- e : te *)
     (* Fun(x,tx, e) -> Tfun(tx, type_of ((x, tx) :: gamma) e) *)
-  | Letfun(f, x, fun_type, body, e) ->
+  | Fun(f, x, fun_type, body) ->
     (match fun_type with (Tfun(t1,t2) as t) ->
       let gamma' = (f, t) :: (x, t1) :: gamma in
-      if (type_of gamma' body) = t2 then
-        type_of ((f, t) :: gamma) e
+      if (type_of gamma' body) = t2 then t
       else
       raise (Type_Error("\"TFun-Rule\": Return type does not match"^(string_of_loc (e.loc))))
     |_ -> raise (Type_Error("\"TFun-Rule\": Function type does not match"^(string_of_loc (e.loc)))) )

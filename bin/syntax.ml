@@ -52,7 +52,7 @@ type exp =
                                                     (* Typed declaration *)
 	| Prim of located_exp * ide * located_exp         (* Op Primitives *)
 	| If of located_exp * located_exp * located_exp   (* If-then-else *)
-	| Letfun of ide * ide * ttype * located_exp * located_exp 
+	| Fun of ide * ide * ttype * located_exp 
                                                     (* Fun declaration 
                                                     (f, x, type of f, fBody, letBody)  *)
   | Lambda of ide * ttype * located_exp             (* lambda (x, type of f, body) *)
