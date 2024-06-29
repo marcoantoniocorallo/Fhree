@@ -1,6 +1,5 @@
 (** Utilities and support functions *)
 open Syntax;;
-open Exceptions;;
 
 (**
   length tuple: returns the number of elements of tuple
@@ -22,8 +21,8 @@ let length (tuple : 'a sequence) : int =
 *)
 let get (tuple : 'a sequence) (index : int) : 'a = 
   let rec g t i = match t,i with
-    |Cons(x,xs),0 -> x
-    |Cons(x,xs),n -> g xs (n-1)
+    |Cons(x,_),0 -> x
+    |Cons(_,xs),n -> g xs (n-1)
     |_,_ -> raise (Invalid_argument "Index Out Of Bound! in utils:get")
   in g tuple index
 ;;
@@ -63,7 +62,7 @@ let rec string_of_value (v : value) : string = match v with
   |String s -> s
   |Tuple(t) -> string_of_collection t (string_of_value)
   |ListV(l) -> string_of_collection l (string_of_value)
-  |Closure(f, x, body, env) -> "Closure of "^f
+  |Closure(f, _, _, _) -> "Closure of "^f
 ;;
 
 (** string_of_ttype t: returns a string s representing t

@@ -142,7 +142,7 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
       if t1=t2 then Tfun(type_of_e,Tfun(type_of_l,type_of_l)) 
       else raise(Type_Error("Type error attempting to insert a bad value in a list!"
                             ^(string_of_loc (e.loc))))
-    |Tlist(None),t -> Tfun(type_of_e,Tfun(type_of_l,Tlist(Some type_of_e)))
+    |Tlist(None),_ -> Tfun(type_of_e,Tfun(type_of_l,Tlist(Some type_of_e)))
     |_,_ -> raise(Type_Error("Cons of a non-list value!"^(string_of_loc (e.loc)))) )
   | Head(l) -> (* 'a list -> 'a *)
     let type_of_l = type_of gamma l in 

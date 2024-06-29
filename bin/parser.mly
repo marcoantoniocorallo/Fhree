@@ -1,6 +1,5 @@
 %{
     open Syntax
-    open Type_system
 
     (** Infix operator for creating a located exp from an exp and a location *)
     let (|@|) value loc = { value = value; loc = loc }
@@ -16,7 +15,7 @@
           decr count;
           Lambda(
             x,
-            Tfun(t, ( fold_types (List.filteri (fun i y -> i>=(!count) ) (List.tl types) ) t_final ) ), 
+            Tfun(t, ( fold_types (List.filteri (fun i _ -> i>=(!count) ) (List.tl types) ) t_final ) ), 
             (body|@|loc)
           )
         ) (List.tl ides) (List.tl types) (f_body.value)

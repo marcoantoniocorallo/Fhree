@@ -175,7 +175,7 @@
         | Nil -> acc
         | Cons(x,xs) -> f xs (f_aux x acc)
         in f t acc
-      | Proj(t,i) -> f_aux t acc
+      | Proj(t,_) -> f_aux t acc
       | Cons_op(e,l) -> f_aux l acc |> f_aux e
       | Head(l)
       | Tail(l) -> f_aux l acc
@@ -203,14 +203,14 @@
       | If(e1, e2, e3) ->
         let acc' = (CacheVar(e2.l) @< CacheVar(e.l)) :: (CacheVar(e3.l) @< CacheVar(e.l)) :: acc in
         acc' |> f_aux e1 |> f_aux e2 |> f_aux e3
-      | Letfun(f, x, body, exp) -> 
+      | Letfun(f, _, body, exp) -> 
         let acc' = 
             ( [f] @^ IdVar(f) ) :: 
             ( (CacheVar(exp.l) @< CacheVar(e.l)) ) :: acc in 
             (* maps each constraint cc in body to a constraint ( {on} < R(body.label) ==> cc )*)
             (addHyp ([reachable] @^ ReachVar(body.l)) (f_aux body []))@acc'
             |> f_aux exp
-      | Lambda(x, body) -> 
+      | Lambda(_, body) -> 
         let acc' = 
           ( [{name = ""; id = (e.l);}] @^ CacheVar(e.l) ) :: acc in 
           (addHyp ([reachable] @^ ReachVar(body.l)) (f_aux body []))@acc'
@@ -229,7 +229,7 @@
         | Nil -> acc
         | Cons(x,xs) -> f xs (f_aux x acc)
         in f t acc
-      | Proj(t,i) -> f_aux t acc
+      | Proj(t,_) -> f_aux t acc
       | Cons_op(e,l) -> f_aux l acc |> f_aux e
       | Head(l)
       | Tail(l) -> f_aux l acc

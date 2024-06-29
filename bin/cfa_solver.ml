@@ -90,18 +90,18 @@ struct
     (** Step 2: store in E[p] the constraints affected by p *)
     constraints |> List.iter (function
         | IsIn(tk, p) -> add p (Some (TokSet.of_list tk))
-        | SubSeteq(p1, p2) as cc -> Hashtbl.add edge_cc p1 cc
+        | SubSeteq(p1, _) as cc -> Hashtbl.add edge_cc p1 cc
         | Impl(hyp, concl) as cc -> 
           List.iter (
             function 
-            | IsIn(tk,p) -> Hashtbl.add edge_cc p cc
+            | IsIn(_,p) -> Hashtbl.add edge_cc p cc
             (* add the constraints in p1, in order to satisfy the hyp in the fixpoint step *)
-            | SubSeteq(p1,p2) -> Hashtbl.add edge_cc p1 cc 
+            | SubSeteq(p1,_) -> Hashtbl.add edge_cc p1 cc 
             |_ -> assert false
           ) hyp;
           match concl with
-          | IsIn(tk,p) -> Hashtbl.add edge_cc p cc
-          | SubSeteq(p1,p2) -> Hashtbl.add edge_cc p1 cc
+          | IsIn(_,p) -> Hashtbl.add edge_cc p cc
+          | SubSeteq(p1,_) -> Hashtbl.add edge_cc p1 cc
           | _ -> failwith "The conclusion of the constraint must be either IsIn or SubSeteq."
       ) ;
 

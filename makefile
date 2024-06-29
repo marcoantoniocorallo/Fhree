@@ -1,23 +1,19 @@
-TARGET=src/main
+all: build
 
-#ANALYZER=src/analyzer
+build:
+	dune build
+	cp -f _build/default/bin/main.exe ./Fhree
 
-default: $(TARGET).native
+install: build 
+	mkdir -p _install
+	cp -f ./LICENSE _install/LICENSE
+	cp -f ./README.md _install/README.md
+	cp -f _build/default/bin/main.exe _install/main.exe
 
-$TARGET: default
-
-native: $(TARGET).native
-
-%.native:
-	ocamlbuild -use-menhir -menhir "menhir --explain" -use-ocamlfind -package ppx_deriving.std $@
-	mv main.native ./Fhree
-
-#analyzer: src/analyzer.native
-
-#%.native:
-#	ocamlbuild -use-ocamlfind -package ppx_deriving.std -use-menhir $@
+clear: clean
 
 clean:
-	ocamlbuild -clean
+	rm -fr _build
+	rm -fr _install
 
-.PHONY: clean default
+.PHONY: all build install clear clean

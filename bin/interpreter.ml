@@ -142,12 +142,12 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 	| Head(l) ->
 		let list = eval l env in 
 		(match list with
-		| ListV(Cons(x,xs)) -> x
+		| ListV(Cons(x,_)) -> x
 		| _ ->  raise (Type_system_Failed("eval:Head - "^(string_of_value list)
             ^" at Token: "^(string_of_loc (e.loc) ) ) ) )
 	| Tail(l) -> let list = eval l env in 
 		(match list with
-		| ListV(Cons(x,xs)) -> ListV(xs)
+		| ListV(Cons(_,xs)) -> ListV(xs)
 		| _ ->  raise (Type_system_Failed("eval:Tail - "^(string_of_value list)
             ^" at Token: "^(string_of_loc (e.loc) ) ) ) )
 ;;

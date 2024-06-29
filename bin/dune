@@ -1,0 +1,17 @@
+(executable
+ (public_name Fhree)
+ (name main)
+ (libraries menhirLib)
+ (modules (:standard))
+ (preprocess (pps ppx_deriving.std))
+)
+
+(menhir 
+ (modules parser))
+
+(rule
+ (targets lexer.ml)
+ (deps lexer.mll)
+ (action (run ocamllex -q %{deps})))
+
+(include_subdirs unqualified)
