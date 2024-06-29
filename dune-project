@@ -6,6 +6,8 @@
 
 (using menhir 3.0)
 
+(wrapped_executables false)
+
 (source
  (github marcoantoniocorallo/Fhree))
 

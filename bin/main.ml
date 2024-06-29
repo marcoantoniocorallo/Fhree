@@ -25,23 +25,22 @@ let eval code env =
 let print_usage () = 
   print_endline "Usage: Fhree [--no-cfa | --cfa | --all] filename.F3";
   print_endline ("Options:"^
-  "\n\t--all"^
-      "\n\t\t default option: does a control-flow-analysis of the code and prints the result into filename.cfa"^
-      "\n\t\t then executes the program;"^
-    "\n\t--no-cfa"^
-      "\n\t\t executes only the program, without analyzing the code;"^
+  "\n\t--no-cfa"^
+      "\n\t\t default option: executes only the program, without analyzing the control-flow;"^
     "\n\t--cfa"^
-      "\n\t\t executes only the control-flow analyzer, without executing the program;")
-let format_error () = print_endline "Format Error: the file must have format .F3"
+      "\n\t\t executes only the control-flow analyzer, without executing the program;"^
+    "\n\t--all"^
+      "\n\t\t does a control-flow-analysis of the code and prints the result into filename.cfa"^
+      "\n\t\t then executes the program;"
+  )
 
 let () =
   let argvLength = Array.length Sys.argv in 
   if argvLength < 2 || argvLength > 3 then print_usage()
   else
-    let opt = if argvLength = 3 then Sys.argv.(1) else "--all" in
+    let opt = if argvLength = 3 then Sys.argv.(1) else "--no-cfa" in
     let filename = Sys.argv.(argvLength-1) in 
-    if not (String.ends_with ~suffix:".F3" filename) then format_error()
-    else let lexbuf = Lexing.from_channel (open_in filename) in 
+    let lexbuf = Lexing.from_channel (open_in filename) in 
       try
         let code = Parser.main Lexer.tokenize lexbuf in 
         match opt with
@@ -50,7 +49,7 @@ let () =
         | "--no-cfa" -> eval code []
         | _ -> print_usage()
       with
-        (* Character that doesn't matches any case in lexer (i.e. '&')*)
+        (* Character that doesn't match any case in lexer (i.e. '&')*)
         |Lexing_Error(s) -> Printf.fprintf stderr "%s\n" s
         (* A malformed sequence of tokens (i.e. "let x + 5" ) *)
         |Parser.Error ->  Printf.fprintf stderr "Syntax error at %s.\n%!" 

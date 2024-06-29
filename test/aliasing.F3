@@ -1,0 +1,32 @@
+(*
+    let sum2 = 
+        lambda ( x : int ) : int -> x + 2
+    in sum2 3
+
+    // is equal to
+
+    let sum2 = 
+        fun _ ( x : int ) : int = x + 2
+    in sum2 3
+
+    // that is equal to
+
+    let fun sum2 (x : int) : int = x + 2
+    in sum2 3
+*)
+
+// Aliasing
+(* 
+    let fact =
+        fun f (n : int) : int = 
+            if n = 0 then 1
+            else n * f (n - 1)
+    in fact 5
+*)
+
+    // equal to 
+
+    let fun fact (n : int) : int =
+        if n = 0 then 1
+        else n * fact (n - 1)
+    in fact 5
