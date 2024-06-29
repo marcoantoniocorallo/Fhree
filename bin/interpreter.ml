@@ -98,7 +98,6 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 		| _     ->  raise (Type_system_Failed("eval:If non-bool guard - "
                 ^(string_of_value evaluated)^" at Token: "^(string_of_loc (e.loc) ) ) ) )
 	| Fun(f, x, _, fBody) -> Closure(f, x, fBody, env)
-  | Lambda(x, _, fBody) -> Closure("",x, fBody, env)
 	| Call(eFun, eArg) ->
 		let fClosure = eval eFun env in
 		(match fClosure with

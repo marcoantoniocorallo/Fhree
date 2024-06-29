@@ -13,7 +13,8 @@
       List.fold_right2 (
         fun x t body -> 
           decr count;
-          Lambda(
+          Fun(
+            "",
             x,
             Tfun(t, ( fold_types (List.filteri (fun i _ -> i>=(!count) ) (List.tl types) ) t_final ) ), 
             (body|@|loc)
@@ -105,7 +106,7 @@ expr:
     ":" t_res = ptype "->" e = expr  %prec prec_let
     { 
       let (first_arg, types_folded, lambdas_folded) = curry l t_res e ($loc) in 
-      Lambda(first_arg, types_folded, (lambdas_folded |@| $loc)) |@| $loc 
+      Fun("", first_arg, types_folded, (lambdas_folded |@| $loc)) |@| $loc 
     }
     
 | f = func

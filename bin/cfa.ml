@@ -88,10 +88,6 @@
       let xvar = { name = x; id = next_label () } in
       let abody = transform ((fvar.name, fvar.id)::(xvar.name, xvar.id)::env) body in
       Fun(fvar, xvar, abody) |> mk_aexpr
-    | Syntax.Lambda(x, _, body) -> 
-      let xvar = { name = x; id = next_label () } in
-      let abody = transform ((xvar.name, xvar.id)::env) body in
-      Lambda(xvar, abody) |> mk_aexpr
     | Syntax.Call(e1, e2) ->
       let ae1 = transform env e1 in
       let ae2 = transform env e2 in
