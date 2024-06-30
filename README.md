@@ -22,10 +22,10 @@ Unlike in OCaml, there are no free variables. So there is no *let* construct but
 let x = 5 in x
 ```
 
-For (also recursive) functions there is a construct *fun* similar to the OCaml's *let-rec*.
+For (also recursive) functions there is a construct *let-fun* similar to the OCaml's *let-rec*.
 
 ```ocaml
-fun fact n = 
+let fun fact n = 
     if n = 0 then 1
     else n * fact (n - 1)
 in fact 5
@@ -34,17 +34,27 @@ in fact 5
 In order to have a *strong type system*, functions declaration make use of mandatory *type annotations*.
 
 ```ocaml
-fun fact ( n : int ) : int = 
+let fun fact ( n : int ) : int = 
     if n = 0 then 1
     else n * fact (n - 1)
 in fact 5
 ```
 
+Functions can be used also without declaration, this allows to have both lambdas and recursive lambdas:
+
 ```ocaml
-"lambda" |> lambda (s : string) : string -> " with annotation"
+5 |> (
+    fun fact ( n : int ) : int = 
+        if n = 0 then 1
+        else n * fact (n - 1)
+)
 ```
 
-Type annotations are available in every construct, but optionally.
+```ocaml
+"anon-fun" |> lambda (s : string) : string -> " with annotation"
+```
+
+Type annotations are available also in every other construct, but optionally.
 
 #### Data Types
 
@@ -88,15 +98,16 @@ Expressible and denotable values are
 - strings
 
 - function closures
-* tuples of values
 
-* list of values
+- tuples of values
+
+- list of values
 
 #### Control Flow Analysis
 
 In addition to the *type analysis*, Fhree does a step of *control-flow-analysis*, using a *fix-point* algorithm. The result of the analysis of a file *f* is writed into a file *f*.cfa.
 
-The CFA can be skipped passing the option `--no-cfa`, as you can read in the usage message. 
+The CFA is skipped by default (option `--no-cfa`), as you can read in the usage message. 
 
 There is also an option to do **only** the CFA, using Fhree as an analyzer.
 
@@ -115,14 +126,15 @@ To build *Fhree* just move in the directory and run `make`.
 After that, you can run the interpreter of the language `./Fhree` with the following options.
 
 ```
-Usage: Fhree [--no-cfa | --cfa | --all] filename.F3
+Usage: Fhree [--no-cfa | --cfa | --all] filename
 Options:
- --all
-    default option: does a control-flow-analysis of the code and prints the result into filename.cfa then executes the program;
- --no-cfa 
-    executes only the program, without analyzing the code;
+ --no-cfa
+    default option: executes only the program, without analyzing the control-flow;
  --cfa
-    executes only the control-flow analyzer, without executing the program;
+    executes only the control-flow analyzer, without executing the program;
+ --all
+    does a control-flow-analysis of the code and prints the result into filename.cfa
+    then executes the program;
 ```
 
 ---
@@ -131,7 +143,7 @@ Options:
 
 - Hexadecimal integers
 
-- Free variables
+- Global Declarations
 
 - Unification algorithm for removing the mandatory type annotation in fun definitions
 
