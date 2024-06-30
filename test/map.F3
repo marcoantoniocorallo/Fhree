@@ -1,0 +1,10 @@
+let fun map (f : 'a -> 'b) (l : 'a list) : 'b list = 
+    if empty l then []
+    else f (hd l) :: map f (tl l)
+in map (lambda (x : int) : int -> x+1 ) [1, 2, 3]
+
+let fun f (x : 'a) : 'b =
+    let fun g (y : 'a) : 'c =
+    h : 'a -> 'a -> 'c
+    h x y
+    in h x (g x)

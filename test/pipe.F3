@@ -12,5 +12,5 @@
 *)
 
 (* higher-order function passed by pipe *)
-fun f (g : int -> int) (n : int) : int = g n in 
+let fun f (g : int -> int) (n : int) : int = g n in 
 (lambda (x : int) : int -> x+10) |> f 5

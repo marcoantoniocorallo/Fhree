@@ -1,3 +1,3 @@
-fun f (x : int) : int = x*x in 
+let fun f (x : int) : int = x*x in 
 let t : (int * int * (int -> int)) = (1,3,f) in 
 (proj t 2) 5

@@ -1,5 +1,5 @@
 let l = [3, 2, 7] in    //useless definition
-fun square_of_head (l : int list) : int = 
+let fun square_of_head (l : int list) : int = 
   let h = hd l in 
   h*h
 in square_of_head ['a','b']

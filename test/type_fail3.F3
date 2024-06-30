@@ -1,2 +1,1 @@
-fun f (n:int) : int = n*n
-in f "c"
+(fun f (n:int) : int = n*n) "c"

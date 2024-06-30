@@ -1,1 +1,1 @@
-fun f (x : int) : int = x*2 in f 5
+let fun f (x : int) : int = x*2 in f 5

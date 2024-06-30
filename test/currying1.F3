@@ -11,4 +11,5 @@
 	twice double 4
 *)
 
-fun twice (f : int -> int) (n : int) : int = f (f n) in twice (lambda (x : int) : int -> x*2) 4
+let fun twice (f : int -> int) (n : int) : int = f (f n) 
+	in twice (lambda (x : int) : int -> x*2) 4

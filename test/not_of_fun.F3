@@ -1,1 +1,1 @@
-not( fun f (x:int) : bool = true in f 0 )
+not( (fun f (x:int) : bool = true) 0 )
