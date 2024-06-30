@@ -63,7 +63,7 @@ and ttype =
   | Tchar                                           (*  Type char *)
   | Tstring                                         (*  Type string *)
   | Tfun of ttype * ttype                           (*  Type of function *)
-  | Ttuple of ttype list                        (*  Compound type: tuple *)
+  | Ttuple of ttype list                        		(*  Compound type: tuple *)
   | Tlist of ttype option                           (*  Compound type: list *)
 
 and located_exp = exp located                 			(* ( exp * location ) *)
@@ -79,6 +79,6 @@ and value =
 	| Char of char
 	| String of string
 	| Closure of string * string * located_exp * value env	(* (f, x, fBody, fDeclEnv) *)
-	| Tuple of value list   														(* Heterogeneous fixed-length tuple of values*)
-	| ListV of value list   														(* Homogeneous list of values *)
+	| Tuple of value list   																(* Heterogeneous fixed-length tuple of values*)
+	| ListV of value list   																(* Homogeneous list of values *)
 ;;
