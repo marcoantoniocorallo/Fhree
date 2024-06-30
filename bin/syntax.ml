@@ -27,16 +27,10 @@ let rec lookup env x =
 
 (* alias: identifiers are strings *)
 type ide = string
+[@@deriving show]
 
 (** Located node *)
 type 'a located = { loc : Lexing.position * Lexing.position; value : 'a}
-
-(** Recursive definition of polymorphic data structures *)
-type 'a sequence = 
-  | Nil                                             (* Represents the empty sequence *)
-  | Cons of 'a * 'a sequence                        (* Item of the sequence *)
-[@@deriving show]
-;;
 
 (** Algebraic Data Types *)
 type exp =
@@ -54,9 +48,9 @@ type exp =
 	| If of located_exp * located_exp * located_exp   (* If-then-else *)
 	| Fun of ide * ide * ttype * located_exp 					(* Fun expr (f, x, type of f, fBody)  *)
 	| Call of located_exp * located_exp               (* Fun application *)
-	| Tup of located_exp sequence			 				 	 			(* Heterogeneous Fixed-length list of expressions *)
+	| Tup of located_exp list			 				 	 					(* Heterogeneous Fixed-length list of expressions *)
 	| Proj of located_exp * located_exp               (* i-th element of tuple *)
-	| Lst of located_exp sequence 		 					 			(* Homogeneous List of expressions *)
+	| Lst of located_exp list 		 					 					(* Homogeneous List of expressions *)
 	| Cons_op of located_exp * located_exp						(* Concatenates an exp in head of a list *)
 	| Head of located_exp															(* Return the first element of a list *)
 	| Tail of located_exp															(* Return the list without the first el *)
@@ -69,7 +63,7 @@ and ttype =
   | Tchar                                           (*  Type char *)
   | Tstring                                         (*  Type string *)
   | Tfun of ttype * ttype                           (*  Type of function *)
-  | Ttuple of ttype sequence                        (*  Compound type: tuple *)
+  | Ttuple of ttype list                        (*  Compound type: tuple *)
   | Tlist of ttype option                           (*  Compound type: list *)
 
 and located_exp = exp located                 			(* ( exp * location ) *)
@@ -85,6 +79,6 @@ and value =
 	| Char of char
 	| String of string
 	| Closure of string * string * located_exp * value env	(* (f, x, fBody, fDeclEnv) *)
-	| Tuple of value sequence   														(* Heterogeneous fixed-length tuple of values*)
-	| ListV of value sequence   														(* Homogeneous list of values *)
+	| Tuple of value list   														(* Heterogeneous fixed-length tuple of values*)
+	| ListV of value list   														(* Homogeneous list of values *)
 ;;

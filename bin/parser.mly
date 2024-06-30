@@ -180,22 +180,22 @@ func:
 (** A tuple must have at least two elements  *)
 tuple:
 | "(" e = expr "," s = sequence ")"
-    { Cons(e, s) }
+    { e::s }
 
 (** A list can be an empty list or a list of any size *)
 lst:
 | "[" "]"
-    { Nil }
+    { [] }
 
 | "[" s = sequence "]"
     { s }
 
 sequence:
 | e = expr "," s = sequence
-    { Cons(e, s) }
+    { e::s }
 
 | e = expr 
-    { Cons(e, Nil) }
+    { e::[] }
 
 (** Syntactical categories for types definition *)
 ptype:
@@ -203,7 +203,7 @@ ptype:
     { t }
 
   | "(" t = ptype "*" s = ptype_sequence ")"
-    { Ttuple(Cons(t,s)) }
+    { Ttuple(t::s) }
 
   | t1 = ptype "->" t2 = ptype
     { Tfun(t1, t2) }
@@ -235,10 +235,10 @@ simple_ptype:
 
 ptype_sequence:
   | t = ptype "*" s = ptype_sequence
-    { Cons(t, s) }
+    { t::s }
 
   | t = ptype 
-    { Cons(t, Nil) }
+    { t::[] }
 
 %inline binop:
 | "+"   { "+" }

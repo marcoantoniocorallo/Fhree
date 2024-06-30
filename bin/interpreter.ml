@@ -110,9 +110,9 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 	| Tup(tuple) -> 
 		let evaluateTuple t = 
 			let rec f t acc = match t with
-				| Nil -> Tuple(reverse acc)
-				| Cons(x, xs) -> f xs (Cons(eval x env, acc))
-			in f t Nil
+				| [] -> Tuple(List.rev acc)
+				| x::xs -> f xs (eval x env::acc)
+			in f t []
 		in evaluateTuple tuple
   | Proj(t,i) -> 
     let tuple = eval t env in 
@@ -124,27 +124,27 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 	| Lst(list) -> 
 		let evaluateList l = 
 			let rec f l acc = match l with
-				| Nil -> ListV(reverse acc)
-				| Cons(x, xs) -> f xs (Cons(eval x env, acc))
-			in f l Nil
+				| [] -> ListV(List.rev acc)
+				| x::xs -> f xs (eval x env::acc)
+			in f l []
 		in evaluateList list
 	| Cons_op(e, l) ->
 		let v1 = eval e env in 
 		let v2 = eval l env in
 		(match v1, v2 with
-		| _,  ListV(Nil)   ->  ListV(Cons(v1,Nil))
-		| x1, ListV(Cons(x2,xs)) ->  ListV(Cons(x1,Cons(x2,xs)))
+		| _,  ListV([])   ->  ListV([v1])
+		| x1, ListV(x2::xs) ->  ListV(x1::x2::xs)
 		| _,_ ->  raise (Type_system_Failed("eval:cons a list was expected - "^(string_of_value v1)
               ^" - "^(string_of_value v2)^" at Token: "^(string_of_loc (e.loc) ) ) ) )
 	| Head(l) ->
 		let list = eval l env in 
 		(match list with
-		| ListV(Cons(x,_)) -> x
+		| ListV(x::_) -> x
 		| _ ->  raise (Type_system_Failed("eval:Head - "^(string_of_value list)
             ^" at Token: "^(string_of_loc (e.loc) ) ) ) )
 	| Tail(l) -> let list = eval l env in 
 		(match list with
-		| ListV(Cons(_,xs)) -> ListV(xs)
+		| ListV(_::xs) -> ListV(xs)
 		| _ ->  raise (Type_system_Failed("eval:Tail - "^(string_of_value list)
             ^" at Token: "^(string_of_loc (e.loc) ) ) ) )
 ;;

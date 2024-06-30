@@ -107,9 +107,9 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
   | Tup(tuple) ->
     let type_of_tuple t = 
       let rec f t acc = match t with
-        | Nil -> Ttuple(reverse acc)
-        | Cons(x, xs) -> f xs (Cons(type_of gamma x, acc))
-      in f t Nil
+        | [] -> Ttuple(List.rev acc)
+        | x::xs -> f xs ((type_of gamma x::acc))
+      in f t []
     in type_of_tuple tuple
   | Proj(tup,i) ->
     let type_of_tuple = type_of gamma tup in 
@@ -125,8 +125,8 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
               ^" at Token: "^(string_of_loc (e.loc) ))) )
   | Lst(list) -> 
     (match list with 
-    |Nil -> Tlist None 
-    |Cons(x,_) -> Tlist (Some(type_of gamma x)))
+    |[] -> Tlist None 
+    |x::_ -> Tlist (Some(type_of gamma x)))
   | Cons_op(e, l) -> (* 'a -> 'a list -> 'a list *)
     let type_of_l = type_of gamma l in 
     let type_of_e = type_of gamma e in 

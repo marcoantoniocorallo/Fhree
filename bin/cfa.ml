@@ -5,7 +5,6 @@
   *)
 
   open Syntax
-  open Utils
   
   (** Type representing the label associated to each sub-expression *)
   type label = int
@@ -42,9 +41,9 @@
     | Fun of var * var * aexpr
     | Lambda of var * aexpr     
     | Call of aexpr * aexpr
-    | Tup of aexpr sequence			 				 	 			
+    | Tup of aexpr list			 				 	 			
     | Proj of aexpr * aexpr               
-    | Lst of aexpr sequence 		 					 			
+    | Lst of aexpr list 		 					 			
     | Cons_op of aexpr * aexpr						
     | Head of aexpr															
     | Tail of aexpr				
@@ -94,18 +93,18 @@
       Call(ae1, ae2) |> mk_aexpr
     | Syntax.Tup(t) ->
       let rec f t acc = match t with
-      | Nil -> Tup(reverse acc)
-      | Cons(x,xs) -> f xs (Cons(transform env x,acc))
-      in f t Nil |> mk_aexpr
+      | [] -> Tup(List.rev acc)
+      | x::xs -> f xs (transform env x::acc)
+      in f t [] |> mk_aexpr
     | Syntax.Proj(t,i) -> 
       let at = transform env t in 
       let ai = transform env i in 
       Proj(at,ai) |> mk_aexpr
     | Syntax.Lst(l) -> 
       let rec f t acc = match t with
-      | Nil -> Lst(reverse acc)
-      | Cons(x,xs) -> f xs (Cons(transform env x,acc))
-      in f l Nil |> mk_aexpr
+      | [] -> Lst(List.rev acc)
+      | x::xs -> f xs (transform env x::acc)
+      in f l [] |> mk_aexpr
     | Syntax.Cons_op(e,l) -> 
       let ae = transform env e in 
       let al = transform env l in 
@@ -167,8 +166,8 @@
       | Tup(t)
       | Lst(t) -> 
         let rec f t acc = match t with
-        | Nil -> acc
-        | Cons(x,xs) -> f xs (f_aux x acc)
+        | [] -> acc
+        | x::xs -> f xs (f_aux x acc)
         in f t acc
       | Proj(t,_) -> f_aux t acc
       | Cons_op(e,l) -> f_aux l acc |> f_aux e
@@ -219,8 +218,8 @@
       | Tup(t) 
       | Lst(t) -> 
         let rec f t acc = match t with
-        | Nil -> acc
-        | Cons(x,xs) -> f xs (f_aux x acc)
+        | [] -> acc
+        | x::xs -> f xs (f_aux x acc)
         in f t acc
       | Proj(t,_) -> f_aux t acc
       | Cons_op(e,l) -> f_aux l acc |> f_aux e
