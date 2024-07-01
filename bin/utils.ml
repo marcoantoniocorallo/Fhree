@@ -43,7 +43,7 @@ let rec string_of_ttype (t : ttype) : string = match t with
   | Tchar -> "char"
   | Tstring -> "string"
   | Tfun(t1,t2) -> ((string_of_ttype t1)^" -> "^(string_of_ttype t2))
-  | Ttuple tt -> List.map string_of_ttype tt |> String.concat "; "
+  | Ttuple tt -> List.map string_of_ttype tt |> String.concat " * "
   | Tlist tt -> (if (Option.is_some tt) then (string_of_ttype (Option.get tt)) else "empty")^" list"
 ;;
 

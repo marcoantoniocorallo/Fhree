@@ -1,0 +1,8 @@
+Parentheses needed
+(*
+    let fun f (g : (int * int) -> int ) : int = 0 in 
+    f ( fun h (t : (int * int) ) : int = 3 )
+*)
+
+let fun f (t : (int * (int -> int) ) ) : int = 0 in 
+f ( 1, lambda (x : int) : int -> x )

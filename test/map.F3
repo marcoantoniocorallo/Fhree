@@ -8,7 +8,7 @@
 (*
     let fun map (f : string -> string) (l : string list) : string list = 
             if is_empty l then []
-            else ((f (hd l)) :: (map f (tl l)))
+            else f (hd l) :: map f (tl l)
         in map (lambda (x : string) : string -> x^" cucù" ) ["Ehi", "Wooo"]
 *)
 
@@ -19,5 +19,5 @@
         else "not a number" in 
     let fun map (f : int -> string) (l : int list) : string list = 
         if is_empty l then []
-        else ((f (hd l)) :: (map f (tl l)))
+        else f (hd l) :: map f (tl l)
     in map to_string [1, 2, 3, 4]

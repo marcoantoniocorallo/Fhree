@@ -50,7 +50,7 @@
 %token LESS "<" LEQ "<=" GREATER ">" GEQ ">=" EQ "=" NEQ "<>"
 %token AND "&&" OR "||" NOT "!" CONCAT "^"
 %token PROJ
-%token CONS_OP "::" HEAD "hd" TAIL "tl" MAP "map" IS_EMPTY "is_empty"
+%token CONS_OP "::" HEAD "hd" TAIL "tl" IS_EMPTY
 %token COMMA "," COLON ":" ARROW "->"
 %token EOF
 
@@ -62,7 +62,7 @@
 %nonassoc prec_let (* shifts! *)
 %right "->" 
 %left "=" "<" ">" "<=" ">=" "<>" "&&" "||"
-%left "+" "-" "^" "+." "-."
+%left "+" "-" "^" "+." "-." "::"
 %left "*" "/" "%" "*." "/."
 
 %start <Syntax.located_exp> main
@@ -125,7 +125,7 @@ expr:
 | PROJ t = simple_expr i = simple_expr                             
     { Proj(t,i) |@| $loc }
 
-| e = simple_expr "::" l = simple_expr
+| e = expr "::" l = expr
     { Cons_op(e,l) |@| $loc }
 
 | HEAD l = simple_expr
@@ -135,9 +135,6 @@ expr:
     { Tail(l) |@| $loc }
 
 | IS_EMPTY l = simple_expr
-    { IsEmpty(l) |@| $loc }
-
-| MAP l = simple_expr
     { IsEmpty(l) |@| $loc }
     
 (** simple_expr is a syntactical category used for disambiguing the grammar. *)
