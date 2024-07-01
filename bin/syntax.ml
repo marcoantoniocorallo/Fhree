@@ -1,6 +1,8 @@
 (** Syntax of the language : definition of ADT, EVT, types and Environment 
  *
  *  Design choices:
+ *	- An empty program is still a correct program (with unit value)
+ *	- There is a single sequencing expression, that is "let"
  *  - The language requires type annotation for function parameter and return type
  *  - The construct Proj t i takes a tuple and an integer literal ! 
  *    That's the only way to perform a type analysis without define too much complex analyses.    
