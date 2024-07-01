@@ -20,14 +20,15 @@ let get (tuple : 'a list) (index : int) : 'a =
   @return a string representing v
 *)
 let rec string_of_value (v : value) : string = match v with
-  |Int k -> string_of_int k
-  |Float k -> string_of_float k
-  |Bool k -> string_of_bool k
-  |Char k -> String.make 1 k
-  |String s -> s
-  |Tuple(c)  
-  |ListV(c) -> List.map string_of_value c |> String.concat "; "
-  |Closure(f, _, _, _) -> "Closure of "^f
+  | Unit -> ""
+  | Int k -> string_of_int k
+  | Float k -> string_of_float k
+  | Bool k -> string_of_bool k
+  | Char k -> String.make 1 k
+  | String s -> s
+  | Tuple(c)  
+  | ListV(c) -> List.map string_of_value c |> String.concat "; "
+  | Closure(f, _, _, _) -> "Closure of "^f
 ;;
 
 (** string_of_ttype t: returns a string s representing t
@@ -35,14 +36,15 @@ let rec string_of_value (v : value) : string = match v with
   @return a string representing t
 *)
 let rec string_of_ttype (t : ttype) : string = match t with
-  | Tint -> "Tint"
-  | Tbool -> "Tbool"
-  | Tfloat -> "Tfloat"
-  | Tchar -> "Tchar"
-  | Tstring -> "Tstring"
+  | Tunit -> "unit"
+  | Tint -> "int"
+  | Tbool -> "bool"
+  | Tfloat -> "float"
+  | Tchar -> "char"
+  | Tstring -> "string"
   | Tfun(t1,t2) -> ((string_of_ttype t1)^" -> "^(string_of_ttype t2))
   | Ttuple tt -> List.map string_of_ttype tt |> String.concat "; "
-  | Tlist tt -> (if (Option.is_some tt) then (string_of_ttype (Option.get tt)) else "Empty")^" list"
+  | Tlist tt -> (if (Option.is_some tt) then (string_of_ttype (Option.get tt)) else "empty")^" list"
 ;;
 
 (** string_of_position p returns a string representing the position p

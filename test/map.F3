@@ -1,10 +1,23 @@
-let fun map (f : 'a -> 'b) (l : 'a list) : 'b list = 
-    if empty l then []
-    else f (hd l) :: map f (tl l)
-in map (lambda (x : int) : int -> x+1 ) [1, 2, 3]
+(*
+    let fun map (f : int -> int) (l : int list) : int list = 
+        if is_empty l then []
+        else ((f (hd l)) :: (map f (tl l)))
+    in map (lambda (x : int) : int -> x+1 ) [1, 2, 3]
+*)
 
-let fun f (x : 'a) : 'b =
-    let fun g (y : 'a) : 'c =
-    h : 'a -> 'a -> 'c
-    h x y
-    in h x (g x)
+(*
+    let fun map (f : string -> string) (l : string list) : string list = 
+            if is_empty l then []
+            else ((f (hd l)) :: (map f (tl l)))
+        in map (lambda (x : string) : string -> x^" cucù" ) ["Ehi", "Wooo"]
+*)
+
+    let fun to_string (x : int) : string = 
+        if x = 1 then "1"
+        else if x = 2 then "2"
+        else if x = 3 then "3"
+        else "not a number" in 
+    let fun map (f : int -> string) (l : int list) : string list = 
+        if is_empty l then []
+        else ((f (hd l)) :: (map f (tl l)))
+    in map to_string [1, 2, 3, 4]

@@ -13,6 +13,7 @@ open Exceptions;;
   Note: type annotations are here ignored: they are already checked by the type checker.
  *)
 let rec eval (e : located_exp) (env : value env) : value = match e.value with
+	| EmptyProgram -> Unit
 	| CstI i -> Int i
 	| CstB b -> Bool b
 	| CstF f -> Float f
@@ -81,8 +82,7 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 		let v1 = eval e env in 
 		let v2 = eval l env in
 		(match v1, v2 with
-		| _,  ListV([])   ->  ListV([v1])
-		| x1, ListV(x2::xs) ->  ListV(x1::x2::xs)
+		| x, ListV(xs) -> ListV(x::xs)
 		| _,_ ->  raise (Type_system_Failed("eval:cons a list was expected - "^(string_of_value v1)
               ^" - "^(string_of_value v2)^" at Token: "^(string_of_loc (e.loc) ) ) ) )
 	| Head(l) ->
@@ -96,4 +96,10 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 		| ListV(_::xs) -> ListV(xs)
 		| _ ->  raise (Type_system_Failed("eval:Tail - "^(string_of_value list)
             ^" at Token: "^(string_of_loc (e.loc) ) ) ) )
+	| IsEmpty(l) -> let list = eval l env in 
+	(match list with
+	| ListV([]) -> Bool(true)
+	| ListV(_) ->  Bool(false)
+	| _ -> raise (Type_system_Failed("eval:IsEmpty - "^(string_of_value list)
+					^" at Token: "^(string_of_loc (e.loc) ) ) ) )
 ;;

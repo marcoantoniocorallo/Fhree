@@ -50,7 +50,7 @@
 %token LESS "<" LEQ "<=" GREATER ">" GEQ ">=" EQ "=" NEQ "<>"
 %token AND "&&" OR "||" NOT "!" CONCAT "^"
 %token PROJ
-%token CONS_OP "::" HEAD "hd" TAIL "tl"
+%token CONS_OP "::" HEAD "hd" TAIL "tl" MAP "map" IS_EMPTY "is_empty"
 %token COMMA "," COLON ":" ARROW "->"
 %token EOF
 
@@ -72,6 +72,9 @@
 main:
 | e = expr EOF 
     { e }
+
+| EOF
+    { EmptyProgram |@| $loc }
 
 expr:
 | e = simple_expr
@@ -130,6 +133,12 @@ expr:
 
 | TAIL l = simple_expr
     { Tail(l) |@| $loc }
+
+| IS_EMPTY l = simple_expr
+    { IsEmpty(l) |@| $loc }
+
+| MAP l = simple_expr
+    { IsEmpty(l) |@| $loc }
     
 (** simple_expr is a syntactical category used for disambiguing the grammar. *)
 simple_expr:

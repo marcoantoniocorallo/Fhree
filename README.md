@@ -69,7 +69,7 @@ Furthermore, it provides **homogeneous** *lists* of values and **heterogeneous**
 | string  | `"Hello World"`                    | `^`                         | Concatenation of strings                                                                      |
 | boolean | `true`, `false`                    | `&&` `\|\|`                 |                                                                                               |
 | tuple   | `('a', 0, "hi!")`,`(0,1)`          | `proj t i`                  | Projection of the *i*-th element of *t*                                                       |
-| list    | `[2, 4, 6, 8]`, `[]`, `["Hello!"]` | `hd l` <br/>`tl`<br/>`e::l` | Get the first element of *l*<br/>Get *l* without the first element<br/>Add *e* in head of *l* |
+| list    | `[2, 4, 6, 8]`, `[]`, `["Hello!"]` | `hd l` <br/>`tl`<br/>`e::l`<br/>`is_empty l` | Get the first element of *l*<br/>Get *l* without the first element<br/>Add *e* in head of *l*<br/>Tests if *l* is empty |
 
 #### Comments
 

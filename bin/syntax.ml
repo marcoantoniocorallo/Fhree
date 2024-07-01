@@ -14,6 +14,7 @@
 	For simplicity we represent the environment as an association list, i.e., a list of pair (identifier, data).
  *)
 type 'v env = (string * 'v) list
+[@@deriving show]
 
 (**
   Given an environment {env} and an identifier {x} it returns the data {x} is bound to.
@@ -30,10 +31,12 @@ type ide = string
 [@@deriving show]
 
 (** Located node *)
-type 'a located = { loc : Lexing.position * Lexing.position; value : 'a}
+type 'a located = { loc : Lexing.position * Lexing.position [@opaque]; value : 'a}
+[@@deriving show]
 
 (** Algebraic Data Types *)
 type exp =
+	| EmptyProgram 																		(* An Empty file is a correct program *)
 	| CstI of int                              	 			(* Integer constants *)
 	| CstB of bool                               			(* Boolean constants *)
 	| CstF of float															 			(* Float constants *)
@@ -54,9 +57,12 @@ type exp =
 	| Cons_op of located_exp * located_exp						(* Concatenates an exp in head of a list *)
 	| Head of located_exp															(* Return the first element of a list *)
 	| Tail of located_exp															(* Return the list without the first el *)
+	| IsEmpty of located_exp													(* Tests if a list is empty *)
+	[@@deriving show]
 
 (** Types definition *)
 and ttype = 
+	| Tunit																						(*  Type unit *)
   | Tint                                            (*  Type int *)
   | Tbool                                           (*  Type bool *)
   | Tfloat                                          (*  Type float *)
@@ -65,14 +71,17 @@ and ttype =
   | Tfun of ttype * ttype                           (*  Type of function *)
   | Ttuple of ttype list                        		(*  Compound type: tuple *)
   | Tlist of ttype option                           (*  Compound type: list *)
+	[@@deriving show]
 
 and located_exp = exp located                 			(* ( exp * location ) *)
+[@@deriving show]
 
 (** Expressible and denotable values. 
  *  A runtime value is an integer, a boolean, a float, a char, a string,
  *	a tuple or a list of values or a function closure.
  *)
 and value =
+	| Unit																									(* evaluation of an empty program *)
 	| Int of int
 	| Bool of bool
 	| Float of float
@@ -81,4 +90,5 @@ and value =
 	| Closure of string * string * located_exp * value env	(* (f, x, fBody, fDeclEnv) *)
 	| Tuple of value list   																(* Heterogeneous fixed-length tuple of values*)
 	| ListV of value list   																(* Homogeneous list of values *)
+	[@@deriving show]
 ;;

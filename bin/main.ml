@@ -54,5 +54,7 @@ let () =
         (* A malformed sequence of tokens (i.e. "let x + 5" ) *)
         | Parser.Error ->  Printf.fprintf stderr "Syntax error at %s.\n%!" 
                           (string_of_position (Lexing.lexeme_start_p lexbuf))
-        (* Exceptions raised by the interpreter (i.e. a type error ) *)
+        (* Type Error *)
+        | Type_Error(s) -> Printf.fprintf stderr "%s\n" s
+        (* Other exceptions raised by the interpreter *)
         | exn -> Printf.fprintf stderr "%s\n" (Printexc.to_string exn)

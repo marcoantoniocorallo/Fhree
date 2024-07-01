@@ -27,6 +27,7 @@
   
   (* Redefine the syntax for carrying out an annotated expression rather than a node of AST *)
   and term =
+    | EmptyProgram
     | CstI of int
     | CstB of bool
     | CstF of float															 			
@@ -47,6 +48,7 @@
     | Cons_op of aexpr * aexpr						
     | Head of aexpr															
     | Tail of aexpr				
+    | IsEmpty of aexpr
   [@@deriving show]
   
   (** [to_aexpr e] returns an annotated version of e. *)
@@ -59,6 +61,7 @@
      * env is an enrivonment storing for each variable the corresponding unique id.
      *)
     let rec transform env (exp : Syntax.located_exp) = match exp.value with
+    | Syntax.EmptyProgram -> EmptyProgram |> mk_aexpr
     | Syntax.CstI(i) -> CstI(i) |> mk_aexpr
     | Syntax.CstB(b) -> CstB(b) |> mk_aexpr
     | Syntax.CstC(i) -> CstC(i) |> mk_aexpr
@@ -115,6 +118,9 @@
     | Syntax.Tail(e) ->
       let ae = transform env e in
       Tail(ae) |> mk_aexpr
+    | Syntax.IsEmpty(e) ->
+      let ae = transform env e in 
+      IsEmpty(ae) |> mk_aexpr
     in transform [] e
   
   (** The solver is parametric on the type of variables. 
@@ -148,6 +154,7 @@
   let lambdas e =
     let rec f_aux e acc =
       match e.t with
+      | EmptyProgram
       | CstI(_)
       | CstB(_)
       | CstC(_)
@@ -172,7 +179,8 @@
       | Proj(t,_) -> f_aux t acc
       | Cons_op(e,l) -> f_aux l acc |> f_aux e
       | Head(l)
-      | Tail(l) -> f_aux l acc
+      | Tail(l) 
+      | IsEmpty(l) -> f_aux l acc
     in f_aux e []
 
   (** Constraint generator: returns the CFA constraints for the annotated expression ae. *)
@@ -182,6 +190,7 @@
     let open Solver in
     let rec f_aux e acc =
       match e.t with
+      | EmptyProgram
       | CstI(_)
       | CstB(_)
       | CstF(_)
@@ -224,5 +233,6 @@
       | Proj(t,_) -> f_aux t acc
       | Cons_op(e,l) -> f_aux l acc |> f_aux e
       | Head(l)
-      | Tail(l) -> f_aux l acc
+      | Tail(l) 
+      | IsEmpty(l) -> f_aux l acc
     in f_aux aexp []
