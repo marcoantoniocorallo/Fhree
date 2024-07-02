@@ -19,23 +19,18 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 	| CstF f -> Float f
 	| CstC c -> Char c
 	| CstS s -> String s
-	|	Neg x	 -> 
-		(match eval x env with 
-		| Int n -> Int (-n)
-		| Float n -> Float (-.n)
-		| _ as c -> raise (Type_system_Failed("eval:Neg of "^(string_of_value c)
-                ^" at Token: "^(string_of_loc (e.loc) ) ) ) )
-  |	Not x	 ->
-		(match eval x env with 
-		| Bool n -> Bool (not n)
-		| _ as c -> raise (Type_system_Failed("eval:Not of "^(string_of_value c)
-                ^" at Token: "^(string_of_loc (e.loc) ) ) ) )
-	| Var x  -> lookup env x
-	| Prim(e1, op, e2) -> 
+	| Uop(op, x) -> 
+		(try (eval x env) |> eval_uop op 
+		with |_ ->	raise(Unsupported_Primitive("eval:Uop of "^op
+              	^" at Token: "^(string_of_loc (e.loc) ) ) ))
+	| Bop(e1, op, e2) -> 
     let v1 = eval e1 env in 
     let v2 = eval e2 env in 
-    (try eval_op v1 op v2 with |_ -> raise(Unsupported_Primitive("eval:Prim of "^op
-                                    ^" at Token: "^(string_of_loc (e.loc) ) ) ))
+    (try eval_bop v1 op v2 
+		with |_ ->	raise(Unsupported_Primitive("eval:Bop of "^op
+                ^" at Token: "^(string_of_loc (e.loc) ) ) )
+		)
+	| Var x  -> lookup env x
 	| Let(x, _, eRhs, letBody) ->
 		let xVal = eval eRhs env in
 		let letEnv = (x, xVal) :: env in
@@ -45,8 +40,9 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 		(match evaluated with
 		| Bool true -> eval e2 env
 		| Bool false -> eval e3 env
-		| _     ->  raise (Type_system_Failed("eval:If non-bool guard - "
-                ^(string_of_value evaluated)^" at Token: "^(string_of_loc (e.loc) ) ) ) )
+		| _ ->  raise (Type_system_Failed("eval:If non-bool guard - "
+            ^(string_of_value evaluated)^" at Token: "^(string_of_loc (e.loc) ) ) )
+		)
 	| Fun(f, x, _, fBody) -> Closure(f, x, fBody, env)
 	| Call(eFun, eArg) ->
 		let fClosure = eval eFun env in
@@ -56,7 +52,8 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 			let fBodyEnv = (x, xVal) :: (f, fClosure) :: fDeclEnv
 			in eval fBody fBodyEnv
 		| _ ->  raise (Type_system_Failed("eval:Call: a function was expected! "
-            ^(string_of_value fClosure)^" at Token: "^(string_of_loc (e.loc) ) ) ) )
+            ^(string_of_value fClosure)^" at Token: "^(string_of_loc (e.loc) ) ) )
+		)
 	| Tup(tuple) -> 
 		let evaluateTuple t = 
 			let rec f t acc = match t with
@@ -70,7 +67,8 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
     (match tuple, index with 
     | Tuple(t), Int n -> get t n
     | _, _ -> raise (Type_system_Failed("eval:Proj a tuple and an integer was expected - "
-    ^(string_of_value tuple)^" - "^(string_of_value index)^" at Token: "^(string_of_loc (e.loc) ) ) ))
+    ^(string_of_value tuple)^" - "^(string_of_value index)^" at Token: "^(string_of_loc (e.loc) ) ) )
+		)
 	| Lst(list) -> 
 		let evaluateList l = 
 			let rec f l acc = match l with
@@ -84,7 +82,8 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 		(match v1, v2 with
 		| x, ListV(xs) -> ListV(x::xs)
 		| _,_ ->  raise (Type_system_Failed("eval:cons a list was expected - "^(string_of_value v1)
-              ^" - "^(string_of_value v2)^" at Token: "^(string_of_loc (e.loc) ) ) ) )
+              ^" - "^(string_of_value v2)^" at Token: "^(string_of_loc (e.loc) ) ) ) 
+		)
 	| Head(l) ->
 		let list = eval l env in 
 		(match list with
@@ -95,11 +94,13 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 		(match list with
 		| ListV(_::xs) -> ListV(xs)
 		| _ ->  raise (Type_system_Failed("eval:Tail - "^(string_of_value list)
-            ^" at Token: "^(string_of_loc (e.loc) ) ) ) )
+            ^" at Token: "^(string_of_loc (e.loc) ) ) )
+		)
 	| IsEmpty(l) -> let list = eval l env in 
 	(match list with
 	| ListV([]) -> Bool(true)
 	| ListV(_) ->  Bool(false)
 	| _ -> raise (Type_system_Failed("eval:IsEmpty - "^(string_of_value list)
-					^" at Token: "^(string_of_loc (e.loc) ) ) ) )
+					^" at Token: "^(string_of_loc (e.loc) ) ) ) 
+	)
 ;;

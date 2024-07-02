@@ -62,7 +62,7 @@
 %nonassoc prec_let (* shifts! *)
 %right "->" 
 %left "=" "<" ">" "<=" ">=" "<>" "&&" "||"
-%left "+" "-" "^" "+." "-." "::"
+%left "+" "-" "^" "+." "-." "::" 
 %left "*" "/" "%" "*." "/."
 
 %start <Syntax.located_exp> main
@@ -80,14 +80,11 @@ expr:
 | e = simple_expr
     { e }
 
-| "!" e = simple_expr
-    { Not(e) |@| $loc }
-
-| "-" e = simple_expr
-    { Not(e) |@| $loc }
+| op = unop e = simple_expr
+    { Uop(op, e) |@| $loc }
 
 | e1 = expr op = binop e2 = expr
-    { Prim(e1, op, e2) |@| $loc }
+    { Bop(e1, op, e2) |@| $loc }
 
 | IF guard = expr THEN e1 = expr ELSE e2 = expr      %prec prec_let
     { If(guard,e1,e2) |@| $loc }
@@ -142,6 +139,19 @@ simple_expr:
 | "(" e = expr ")"
     { e }
 
+| c = constant
+    { c }
+
+| id = ID
+    { Var(id) |@| $loc }
+
+| t = tuple
+    { Tup(t) |@| $loc }
+
+| l = lst 
+    { Lst(l) |@| $loc }
+
+constant:
 | i = INT
     { CstI(i) |@| $loc }
 
@@ -157,15 +167,6 @@ simple_expr:
 | s = STRING
     { CstS(s) |@| $loc } 
 
-| id = ID
-    { Var(id) |@| $loc }
-
-| t = tuple
-    { Tup(t) |@| $loc }
-
-| l = lst 
-    { Lst(l) |@| $loc }
-    
 (** Fun Call and composition *)
 (** The arg of the function is a simple_expr, that is an identifier, a literal,
     or a complex expression surrounded by parentheses 
@@ -265,3 +266,7 @@ ptype_sequence:
 | "^"   { "^" }
 | "&&"  { "&&" }
 | "||"  { "||" }
+
+%inline unop:
+| "-"   { "-" }
+| "!"   { "!" }

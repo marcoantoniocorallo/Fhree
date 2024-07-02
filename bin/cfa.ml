@@ -33,11 +33,10 @@
     | CstF of float															 			
     | CstC of char															 			
     | CstS of string														 			
-    | Not of aexpr
-    | Neg of aexpr
+    | Uop of ide * aexpr
+    | Bop of string * aexpr * aexpr
     | Var of var
     | Let of var * aexpr * aexpr
-    | Prim of string * aexpr * aexpr
     | If of aexpr * aexpr * aexpr
     | Fun of var * var * aexpr
     | Lambda of var * aexpr     
@@ -67,8 +66,7 @@
     | Syntax.CstC(i) -> CstC(i) |> mk_aexpr
     | Syntax.CstF(i) -> CstF(i) |> mk_aexpr
     | Syntax.CstS(i) -> CstS(i) |> mk_aexpr
-    | Syntax.Not(x)  -> Not( transform env x ) |> mk_aexpr
-    | Syntax.Neg(x)  -> Neg( transform env x ) |> mk_aexpr
+    | Syntax.Uop(op, x) -> Uop(op, transform env x) |> mk_aexpr
     (* looks in the environment for the program point in which has been defined id *)
     | Syntax.Var(id) -> Var({name = id; id = Syntax.lookup env id }) |> mk_aexpr
     | Syntax.Let(x, _, e1, e2) ->
@@ -76,10 +74,10 @@
       let var_id = next_label() in
       let ae2 = transform ((x, var_id)::env) e2 in
       Let({name = x; id = var_id}, ae1, ae2) |> mk_aexpr
-    | Syntax.Prim(e1, op, e2) ->
+    | Syntax.Bop(e1, op, e2) ->
       let ae1 = transform env e1 in
       let ae2 = transform env e2 in
-      Prim(op, ae1, ae2) |> mk_aexpr
+      Bop(op, ae1, ae2) |> mk_aexpr
     | Syntax.If(e1, e2, e3) ->
       let ae1 = transform env e1 in
       let ae2 = transform env e2 in
@@ -161,10 +159,9 @@
       | CstF(_)
       | CstS(_)
       | Var(_)   -> acc
-      | Not(e) -> f_aux e acc
-      | Neg(e) -> f_aux e acc
+      | Uop(_, e) -> f_aux e acc
       | Let(_, e1, e2)
-      | Prim(_, e1, e2)
+      | Bop(_, e1, e2)
       | Call(e1, e2) -> acc |> f_aux e1 |> f_aux e2
       | If(e1, e2, e3) ->  acc |> f_aux e1 |> f_aux e2 |> f_aux e3
       | Fun(f, x, body) ->
@@ -196,10 +193,9 @@
       | CstF(_)
       | CstC(_)
       | CstS(_) -> acc
-      | Not(e) -> f_aux e acc
-      | Neg(e) -> f_aux e acc
+      | Uop(_,e) -> f_aux e acc
       | Var(v) -> (IdVar(v) @< CacheVar(e.l)):: acc
-      | Prim(_, e1, e2) -> acc |> f_aux e1 |> f_aux e2
+      | Bop(_, e1, e2) -> acc |> f_aux e1 |> f_aux e2
       | Let(x, e1, e2) ->
         let acc' = (CacheVar(e1.l) @< IdVar(x)) :: (CacheVar(e2.l) @< CacheVar(e.l)) :: acc in
         acc' |> f_aux e1 |> f_aux e2

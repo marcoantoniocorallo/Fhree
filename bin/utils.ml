@@ -26,8 +26,8 @@ let rec string_of_value (v : value) : string = match v with
   | Bool k -> string_of_bool k
   | Char k -> String.make 1 k
   | String s -> s
-  | Tuple(c)  
-  | ListV(c) -> List.map string_of_value c |> String.concat "; "
+  | Tuple(c) -> "( "^(List.map string_of_value c |> String.concat ", ")^" )"
+  | ListV(c) -> "[ "^(List.map string_of_value c |> String.concat ", ")^" ]"
   | Closure(f, _, _, _) -> "Closure of "^f
 ;;
 

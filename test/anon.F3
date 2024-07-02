@@ -1,1 +1,2 @@
-(lambda (x : int) : int -> 2*x ) 5
+// (lambda (x : int) : int -> 2*x ) 5
+(-1) |> (lambda (x : int) : int -> 2*x )

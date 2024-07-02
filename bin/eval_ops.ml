@@ -2,7 +2,7 @@ open Exceptions;;
 open Syntax;;
 
 (* evaluates primitive operations on the evaluated operands *)
-let eval_op v1 op v2 = 
+let eval_bop v1 op v2 = 
   match (op, v1, v2) with
   (* Math operators for integers and floats *)
   | ("*", Int i1, Int i2) -> Int (i1 * i2)
@@ -52,3 +52,10 @@ let eval_op v1 op v2 =
   | ("^", String s1, String s2) -> String (s1^s2)
   |  _ -> raise (Unsupported_Primitive(op) )
 ;;
+
+let eval_uop op v = 
+  match op, v with
+  |	"-", Int n -> Int (-n)
+  | "-", Float n -> Float (-.n)
+  | "!", Bool n -> Bool (not n)
+  |  _ -> raise (Unsupported_Primitive(op))

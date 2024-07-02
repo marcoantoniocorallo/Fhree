@@ -14,7 +14,7 @@ let rec (<=) (t1 : ttype) (t2 : ttype) : bool = match t1, t2 with
 	| _ -> false
 
 (** The type environment.  
- *  It contains the type of primitives operators and of other primitive functions.
+ *  It contains the type of primitives binary operators.
  *)
 let type_env = [
   "+",  Tfun(Tint, Tfun(Tint, Tint));         (* int -> int -> int *)
@@ -40,38 +40,34 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
   | CstF(_) -> Tfloat
   | CstC(_) -> Tchar
   | CstS(_) -> Tstring
-  | Not(x) -> 
-    ( match type_of gamma x with 
-		| Tbool -> Tbool
-		| _ -> raise (Type_Error ("Not of non-bool type - at Token: "^(string_of_loc (e.loc)))) )
-  | Neg(x) -> 
-    ( match type_of gamma x with 
-    | Tint -> Tint
-    | Tfloat -> Tfloat
-    | _ -> raise (Type_Error ("Not of non-number type - at Token: "^(string_of_loc (e.loc)))) )
+  | Uop(op, x) -> 
+    ( match op, (type_of gamma x) with
+    | "!", Tbool -> Tbool
+    | "!", _ -> raise (Type_Error ("Not of non-bool type - at Token: "^(string_of_loc (e.loc))))
+    | "-", t when t = Tint || t = Tfloat -> t
+    | "-", _ -> raise (Type_Error ("Not of non-number type - at Token: "^(string_of_loc (e.loc))))  
+    | _, _ -> raise (Unsupported_Primitive(op))
+    )
   | Var(x)  -> lookup gamma x
   (* Define equality and comparison for each simple type *)
-  | Prim(e1, "=", e2)
-  | Prim(e1, "<", e2)
-  | Prim(e1, "<=", e2)
-  | Prim(e1, ">", e2)
-  | Prim(e1, ">=", e2)
-  | Prim(e1, "<>", e2) ->
+  | Bop(e1, "=", e2)
+  | Bop(e1, "<", e2)
+  | Bop(e1, "<=", e2)
+  | Bop(e1, ">", e2)
+  | Bop(e1, ">=", e2)
+  | Bop(e1, "<>", e2) ->
     let t1 = type_of gamma e1 in
     let t2 = type_of gamma e2 in
     ( match t1, t2 with
-    | Tint, Tint
-    | Tchar, Tchar
-    | Tfloat, Tfloat
-    | Tstring, Tstring
-    | Tbool, Tbool -> Tbool
     | Ttuple(_), Ttuple(_)
     | Tlist(_), Tlist(_) ->     raise (Type_Error ("Equality of compound values"
                                 ^(string_of_loc (e.loc))))
     | Tfun(_,_), Tfun(_,_) ->   raise (Type_Error ("Equality of functional values"
                                 ^(string_of_loc (e.loc))))
-    | _, _ -> raise (Type_Error ("Error in the arguments of equality"^(string_of_loc (e.loc)))))
-  | Prim(e1, op, e2) ->
+    | t1', t2' when t1' = t2' -> Tbool
+    | _, _ -> raise (Type_Error ("Error in the arguments of equality"^(string_of_loc (e.loc))))
+    )
+  | Bop(e1, op, e2) ->
     let t1 = type_of gamma e1 in
     let t2 = type_of gamma e2 in
     let top = lookup gamma op in
@@ -79,14 +75,15 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
     | Tfun(t1', Tfun(t2', tr')) ->
       if (t1' = t1 && t2' = t2) then tr'
       else raise (Type_Error ("Error in the arguments of "^op^(string_of_loc (e.loc))))
-    | _ ->  raise(Error_of_Inconsistence("Inconsistence in Prim "^op
-            ^(string_of_loc (e.loc)))) )
+    | _ ->  raise(Error_of_Inconsistence("Inconsistence in Prim "^op^(string_of_loc (e.loc))))
+    )
   | Let(x, t, e1, e2) ->
     ( match t with 
     | Some tt -> let t1 = type_of gamma e1 in 
       if t1 = tt then type_of ((x,t1)::gamma) e2
       else raise(Type_Error("Bad type annotation at "^(string_of_loc (e.loc))))
-    | None -> let t1 = type_of gamma e1 in type_of ((x,t1)::gamma) e2)
+    | None -> let t1 = type_of gamma e1 in type_of ((x,t1)::gamma) e2
+    )
   | If(e1, e2, e3) ->
     if (type_of gamma e1) = Tbool then
       let t2 = type_of gamma e2 in
@@ -100,14 +97,16 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
     (* x : tx, Γ |- e : te *)
     (* Fun(x,tx, e) -> Tfun(tx, type_of ((x, tx) :: gamma) e) *)
   | Fun(f, x, fun_type, body) ->
-    ( match fun_type with (Tfun(t1,t2) as t) ->
-      let gamma' = (f, t) :: (x, t1) :: gamma in
-      if (type_of gamma' body) <= t2 then t
-      else
-      raise (Type_Error("Type Error: Function return type does not match. "
+    ( match fun_type with 
+      (Tfun(t1,t2) as t) ->
+        let gamma' = (f, t) :: (x, t1) :: gamma in
+        if (type_of gamma' body) <= t2 then t
+        else
+        raise (Type_Error("Type Error: Function return type does not match. "
             ^"Expected "^(string_of_ttype (type_of gamma' body))^" got "
             ^(string_of_ttype t2)^" at "^(string_of_loc (e.loc))))
-    | _ -> raise (Type_Error("Type Error: Function type does not match"^(string_of_loc (e.loc)))) )
+      | _ -> raise (Type_Error("Type Error: Function type does not match"^(string_of_loc (e.loc))))
+    )
   | Call(e1, e2) ->
     let t1 = type_of gamma e1 in
     let t2 = type_of gamma e2 in
@@ -116,7 +115,8 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
       if tx = t2 then tr
       else raise (Type_Error("fuctional application: argument type mismatch"^(string_of_loc (e2.loc))
                   ^"function "^(string_of_ttype tfun)^" got "^(string_of_ttype t2)^" instead"))
-    | _ -> raise (Type_Error("application to a non functional value"^(string_of_loc (e2.loc)))))
+    | _ -> raise (Type_Error("application to a non functional value"^(string_of_loc (e2.loc))))
+    )
   | Tup(tuple) ->
     let type_of_tuple t = 
       let rec f t acc = match t with
@@ -130,12 +130,10 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
     ( match type_of_tuple, type_of_i with
     | Ttuple(types), Tint -> 
       (match i.value with CstI x -> get types x 
-      |_ -> raise(Type_Error("An int literal was expected in projection of tuple! "
-            ^" at Token: "^(string_of_loc (e.loc) ))) )
-    | Ttuple(_), _ -> raise(Type_Error("An integer was expected in projection of tuple! "
-                      ^" at Token: "^(string_of_loc (e.loc) )))
-    | _, _ -> raise(Type_Error("A tuple was expected in projection of tuple! "
-              ^" at Token: "^(string_of_loc (e.loc) ))) )
+      |_ -> raise(Type_Error("An int literal was expected in projection of tuple! "^" at Token: "^(string_of_loc (e.loc) ))) )
+    | Ttuple(_), _ -> raise(Type_Error("An integer was expected in projection of tuple! "^" at Token: "^(string_of_loc (e.loc) )))
+    | _, _ -> raise(Type_Error("A tuple was expected in projection of tuple! "^" at Token: "^(string_of_loc (e.loc) )))
+    )
   | Lst(list) -> 
     ( match list with 
     | [] -> Tlist None 
@@ -151,24 +149,28 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
     | _, Tlist(None) -> Tlist(Some type_of_e)
     | _,_ ->  raise(Type_Error("Type error: Cons between "
               ^(string_of_ttype type_of_e)^" and a "^(string_of_ttype type_of_l)
-              ^" at: "^(string_of_loc (e.loc)))))
+              ^" at: "^(string_of_loc (e.loc))))
+    )
   | Head(l) -> (* 'a list -> 'a *)
     let type_of_l = type_of gamma l in 
     ( match type_of_l with
     | Tlist(Some t) -> t
     | Tlist(None) -> raise(Type_Error("Type error: attempting to pop an element from an empty list!"
                     ^(string_of_loc (e.loc))))
-    | _ -> raise(Type_Error("Head of a non-list value!"^(string_of_loc (e.loc)))) )
+    | _ -> raise(Type_Error("Head of a non-list value!"^(string_of_loc (e.loc))))
+    )
   | Tail(l) -> (* 'a list -> 'a *)
     let type_of_l = type_of gamma l in 
     ( match type_of_l with
     | Tlist(Some t) -> Tlist(Some t)
     | Tlist(None) -> raise(Type_Error("Type error: attempting to tail an empty list!"
                                     ^(string_of_loc (e.loc))))
-    | _ -> raise(Type_Error("Tail of a non-list value!"^(string_of_loc (e.loc)))) )
+    | _ -> raise(Type_Error("Tail of a non-list value!"^(string_of_loc (e.loc))))
+    )
   | IsEmpty(l) -> (* 'a list -> bool *)
     ( match type_of gamma l with
     | Tlist(_) -> Tbool
-    | _ -> raise(Type_Error("Check emptiness of a non-list value!"^(string_of_loc (e.loc)))) )
+    | _ -> raise(Type_Error("Check emptiness of a non-list value!"^(string_of_loc (e.loc))))
+    )
   
 let type_check e = type_of type_env e
