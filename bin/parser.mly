@@ -181,6 +181,9 @@ func:
 | e = simple_expr "|>" f = simple_expr
     { Call(f,e) |@| $loc }
 
+| op = unop e = simple_expr "|>" f = simple_expr
+    { Call(f,Uop(op, e) |@| $loc ) |@| $loc }
+
 | e = func "|>" f = simple_expr
     { Call(f,e) |@| $loc }
 
