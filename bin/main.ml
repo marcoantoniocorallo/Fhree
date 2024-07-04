@@ -18,9 +18,9 @@ let cfa filename code =
       Printf.fprintf oc "]\n"
     ) solution
 
-let eval code env = 
+let eval code = 
   let _ = type_check code in 
-  print_endline (string_of_value (Interpreter.eval code env)) 
+  print_endline (string_of_value (Interpreter.eval code)) 
 
 let print_usage () = 
   print_endline "Usage: Fhree [--no-cfa | --cfa | --all] filename.F3";
@@ -44,9 +44,9 @@ let () =
       try
         let code = Parser.main Lexer.tokenize lexbuf in 
         match opt with
-        | "--all" -> cfa filename code; eval code []
+        | "--all" -> cfa filename code; eval code
         | "--cfa" -> cfa filename code
-        | "--no-cfa" -> eval code []
+        | "--no-cfa" -> eval code
         | _ -> print_usage()
       with
         (* Character that doesn't match any case in lexer (i.e. '&')*)

@@ -29,12 +29,22 @@ let type_env = [
   "&&", Tfun(Tbool, Tfun(Tbool, Tbool));      (* bool -> bool -> bool *)
   "||", Tfun(Tbool, Tfun(Tbool, Tbool));      (* bool -> bool -> bool *)
   "^",  Tfun(Tstring, Tfun(Tstring, Tstring));(* string -> string -> string *)
+  "get_int", Tfun(Tunit, Tint);
+  "get_float", Tfun(Tunit, Tfloat);
+  "get_bool", Tfun(Tunit, Tbool);
+  "get_char", Tfun(Tunit, Tchar);
+  "get_string", Tfun(Tunit, Tstring);
+  "print_int", Tfun(Tint, Tunit);
+  "print_float", Tfun(Tfloat, Tunit);
+  "print_bool", Tfun(Tbool, Tunit);
+  "print_char", Tfun(Tchar, Tunit);
+  "print_string", Tfun(Tstring, Tunit);
 ]
 
 (** Typing rule in a given type environment gamma *)
 let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
   match e.value with
-  | EmptyProgram -> Tunit
+  | Empty -> Tunit
   | CstI(_) -> Tint
   | CstB(_) -> Tbool
   | CstF(_) -> Tfloat
@@ -74,8 +84,8 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
     ( match top with
     | Tfun(t1', Tfun(t2', tr')) ->
       if (t1' = t1 && t2' = t2) then tr'
-      else raise (Type_Error ("Error in the arguments of "^op^(string_of_loc (e.loc))))
-    | _ ->  raise(Error_of_Inconsistence("Inconsistence in Prim "^op^(string_of_loc (e.loc))))
+      else raise (Type_Error ("Error in the arguments of "^op^": "^(string_of_loc (e.loc))))
+    | _ ->  raise(Error_of_Inconsistence("Inconsistence in Bop "^op^(string_of_loc (e.loc))))
     )
   | Let(x, t, e1, e2) ->
     ( match t with 
@@ -172,5 +182,8 @@ let rec type_of (gamma : ttype env) (e : located_exp) : ttype =
     | Tlist(_) -> Tbool
     | _ -> raise(Type_Error("Check emptiness of a non-list value!"^(string_of_loc (e.loc))))
     )
-  
+  | NativeFunction(_) -> 
+    raise ( Error_of_Inconsistence("type system: !!! Prohibit use of Native Functions !!! at: "^(string_of_loc e.loc)))
+  ;;
+
 let type_check e = type_of type_env e

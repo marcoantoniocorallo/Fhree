@@ -1,0 +1,29 @@
+// print_int 5
+// print_string "5"
+// print_float 5.
+// print_string 5 // type error
+// print_float 5 // type error
+// print_bool true
+// print_bool "true" // type error
+// print_char 'c'
+// print_char c // c not found
+// let c = 'c' in print_char c
+// print_string // closure
+// get_int // closure
+// get_int()
+// get_string()
+// get_string() |> (lambda (x : string) : string -> x^"+1")
+// get_int() |> (lambda (x : int) : int -> x+1)
+// get_int() |> (lambda (x : string) : int -> 1) // Type Error!
+// get_int() |> (lambda (x : int) : int -> x+1) // IO Type Error if non-int value
+// get_char()
+// get_bool()
+// get_float() // note: int input is coerced into float !
+
+let fun fact(n : int) : int = 
+  let _ = print_int n in 
+  if n = 0 then 
+    1
+  else
+    n * fact (n - 1)
+in get_int () |> fact

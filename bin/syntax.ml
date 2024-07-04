@@ -6,6 +6,8 @@
  *  - The language requires type annotation for function parameter and return type
  *  - The construct Proj t i takes a tuple and an integer literal ! 
  *    That's the only way to perform a type analysis without define too much complex analyses.    
+ *	- IO primitives are "native" functions, that is: closure preloaded into the environment
+ *		and defined by means of an AST node that can be instantied only by invokations of these functions
  *)
 
 (** 
@@ -38,27 +40,34 @@ type 'a located = { loc : Lexing.position * Lexing.position [@opaque]; value : '
 
 (** Algebraic Data Types *)
 type exp =
-	| EmptyProgram 																		(* An Empty file is a correct program *)
+	| Empty 																					(* Empty Expression *)
 	| CstI of int                              	 			(* Integer constants *)
 	| CstB of bool                               			(* Boolean constants *)
 	| CstF of float															 			(* Float constants *)
 	| CstC of char															 			(* Char literals *)
 	| CstS of string														 			(* String literals *)
+
 	| Uop of ide * located_exp												(* Unary operators *)
 	| Bop of located_exp * ide * located_exp         	(* Binary operators *)
+
 	| Var of ide                              	 			(* Variables/Identifiers *)
 	| Let of ide * ttype option * located_exp * located_exp        	
                                                     (* Typed declaration *)
 	| If of located_exp * located_exp * located_exp   (* If-then-else *)
 	| Fun of ide * ide * ttype * located_exp 					(* Fun expr (f, x, type of f, fBody)  *)
 	| Call of located_exp * located_exp               (* Fun application *)
+
 	| Tup of located_exp list			 				 	 					(* Heterogeneous Fixed-length list of expressions *)
 	| Proj of located_exp * located_exp               (* i-th element of tuple *)
+
 	| Lst of located_exp list 		 					 					(* Homogeneous List of expressions *)
 	| Cons_op of located_exp * located_exp						(* Concatenates an exp in head of a list *)
 	| Head of located_exp															(* Return the first element of a list *)
 	| Tail of located_exp															(* Return the list without the first el *)
 	| IsEmpty of located_exp													(* Tests if a list is empty *)
+	
+	| NativeFunction of ( value -> value ) * ide option 
+																										(* (ocaml code, arg_name) *)
 	[@@deriving show]
 
 (** Types definition *)

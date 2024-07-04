@@ -1,0 +1,7 @@
+(*
+    let fun f (x : int) : int = x + 1 in 
+    f -1
+    // Doesn't work! f -1 is parsed as binary minus, as in ocaml
+*)
+let fun f (x : int) : int = x + 1 in 
+-1 |> f // this works! 

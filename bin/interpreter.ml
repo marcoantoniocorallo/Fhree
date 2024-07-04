@@ -13,7 +13,7 @@ open Exceptions;;
   Note: type annotations are here ignored: they are already checked by the type checker.
  *)
 let rec eval (e : located_exp) (env : value env) : value = match e.value with
-	| EmptyProgram -> Unit
+	| Empty -> Unit
 	| CstI i -> Int i
 	| CstB b -> Bool b
 	| CstF f -> Float f
@@ -101,6 +101,14 @@ let rec eval (e : located_exp) (env : value env) : value = match e.value with
 	| ListV([]) -> Bool(true)
 	| ListV(_) ->  Bool(false)
 	| _ -> raise (Type_system_Failed("eval:IsEmpty - "^(string_of_value list)
-					^" at Token: "^(string_of_loc (e.loc) ) ) ) 
+					^" at Token: "^(string_of_loc (e.loc) ) ) )
 	)
+	| NativeFunction(f, name_arg) -> 
+		( match name_arg with
+		| Some x -> f (lookup env x)
+		| None	 -> f Unit
+		)
+		
 ;;
+
+let eval (e : located_exp) : value = eval e Native_functions.env;;

@@ -74,7 +74,7 @@ main:
     { e }
 
 | EOF
-    { EmptyProgram |@| $loc }
+    { Empty |@| $loc }
 
 expr:
 | e = simple_expr
@@ -136,6 +136,9 @@ expr:
     
 (** simple_expr is a syntactical category used for disambiguing the grammar. *)
 simple_expr:
+| "(" ")" 
+    { Empty |@| $loc }
+
 | "(" e = expr ")"
     { e }
 
