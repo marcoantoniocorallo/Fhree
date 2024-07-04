@@ -103,6 +103,21 @@ Expressible and denotable values are
 
 - list of values
 
+#### I/O
+There are IO directives for each data type. The format for the type `T` is `get_T`/`print_T`.
+
+IO functions are still expressions, and thus evaluation returns a value. In particular, `print` functions are evaluated to the special value `Unit`.
+
+```ocaml
+let fun fact(n : int) : int = 
+  let _ = print_int n in    // sequencing
+  if n = 0 then 
+    1
+  else
+    n * fact (n - 1)
+in get_int () |> fact
+```
+
 #### Control Flow Analysis
 
 In addition to the *type analysis*, Fhree does a step of *control-flow-analysis*, using a *fix-point* algorithm. The result of the analysis of a file *f* is writed into a file *f*.cfa.
