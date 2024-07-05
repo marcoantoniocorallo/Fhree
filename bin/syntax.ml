@@ -1,20 +1,10 @@
-(** Syntax of the language : definition of ADT, EVT, types and Environment 
- *
- *  Design choices:
- *	- An empty program is still a correct program (with unit value)
- *	- There is a single sequencing expression, that is "let"
- *  - The language requires type annotation for function parameter and return type
- *  - The construct Proj t i takes a tuple and an integer literal ! 
- *    That's the only way to perform a type analysis without define too much complex analyses.    
- *	- IO primitives are "native" functions, that is: closure preloaded into the environment
- *		and defined by means of an AST node that can be instantied only by invokations of these functions
- *)
+(** Syntax of the language : definition of ADT, EVT, types and Environment *)
 
 (** 
 	An environment is a map from identifier to "something".
 	In the semantics this something is a value (what the identifier is bound to).
 	In the type system this "something" is a type.
-  In CFA this something is a label.
+  In CFA this is a label.
 	For simplicity we represent the environment as an association list, i.e., a list of pair (identifier, data).
  *)
 type 'v env = (string * 'v) list
