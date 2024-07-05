@@ -22,6 +22,11 @@ Unlike in OCaml, there are no free variables. So there is no *let* construct but
 let x = 5 in x
 ```
 
+There is a shorthand for this, by means of `;`:
+```ocaml
+let x = 5;
+```
+
 For (also recursive) functions there is a construct *let-fun* similar to the OCaml's *let-rec*.
 
 ```ocaml
