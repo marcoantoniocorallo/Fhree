@@ -1,19 +1,3 @@
-(** Lexer for language FUN
- * Design choice:
- * -A float f is recognized iff Stdlib.float_of_string recognizes f. That is:
- *  "The format of decimal floating-point numbers is [-] dd.ddd (e|E) [+|-] dd , 
- *  where d stands for a decimal digit.
- *  :
- *  In both cases, at least one of the integer and fractional parts must be given; 
- *  the exponent part is optional."
- * -Keywords are stored in a dictionary;
- * -There are both C-like single-line comments, and Ocaml-like comments ( // and (*...*) )
- * -The syntax of tuples and lists differ in the type of the brackets, 
-    not in the separator of elements:
-    ("this", "is", "a", "tuple")
-    ["this", "is", "a", "list"]
- *)
-
 (** Header: define tokens, keywords and utilities for strings *)
 {
 	open Exceptions
@@ -34,9 +18,6 @@
 			("in",	IN);
 			("fun",	FUN);
       ("lambda",LAMBDA);
-			("!", NOT);
-      ("&&", AND);
-      ("||", OR);
       ("not", NOT);
       ("and", AND);
       ("or", OR);
@@ -49,7 +30,7 @@
       ("float", TFLOAT);
       ("bool", TBOOL);
       ("string", TSTRING);
-      ("list", TLIST)
+      ("list", TLIST);
 		]
 
 }
@@ -76,6 +57,9 @@ rule tokenize = parse
 												try Hashtbl.find keyword_table word
 												with Not_found -> ID word
 											}
+  | '!'               { NOT }
+  | "&&"              { AND }
+  | "||"              { OR }
   | ','               { COMMA }
   | '^'               { CONCAT }
   | '+'               { PLUS }
@@ -116,3 +100,4 @@ and comments level = parse
 	|'\n'      	        { Lexing.new_line lexbuf; comments level lexbuf }
   | _					        { comments level lexbuf }
   | eof               { raise (Lexing_Error ("Non-closed comment !!!")) }
+
