@@ -2,7 +2,7 @@
 
 ---
 # Fhree
-Fhree is a *reference implementation* of a small *strongly typed* functional language, it is *interpreted* and it implements the *big-step operational* semantics.
+Fhree is a *reference implementation* of a small *strongly and statically typed* functional language, it is *interpreted* and it implements the *big-step operational* semantics.
 
 It is the result of some excercises for the [*Languages, Compilers and Interpreters*](https://github.com/lillo/compiler-course-unipi) course @ [*UniPi*](https://di.unipi.it/), and it's an extension of the *FUN* language shown by [Prof. Galletta](https://github.com/lillo) during the lectures.
 
@@ -56,6 +56,7 @@ Functions can be used also without declaration, this allows to have both lambdas
 
 Type annotations are available also in every other construct, but optionally.
 
+---
 #### Data Types
 
 Fhree provides the most common data types: *integers*, *floats*, *chars*, *booleans* and *strings.* 
@@ -71,6 +72,7 @@ Furthermore, it provides **homogeneous** *lists* of values and **heterogeneous**
 | tuple   | `('a', 0, "hi!")`,`(0,1)`          | `proj t i`                  | Projection of the *i*-th element of *t*                                                       |
 | list    | `[2, 4, 6, 8]`, `[]`, `["Hello!"]` | `hd l` <br/>`tl`<br/>`e::l`<br/>`is_empty l` | Get the first element of *l*<br/>Get *l* without the first element<br/>Add *e* in head of *l*<br/>Tests if *l* is empty |
 
+---
 #### Comments
 
 There are both *C/Java*-like single-line comments and *OCaml*-like multi-line nested comments
@@ -83,6 +85,7 @@ There are both *C/Java*-like single-line comments and *OCaml*-like multi-line ne
 is a comment *)
 ```
 
+---
 #### Values
 
 Expressible and denotable values are 
@@ -103,6 +106,7 @@ Expressible and denotable values are
 
 - list of values
 
+---
 #### I/O
 There are IO directives for each data type. The format for the type `T` is `get_T`/`print_T`.
 
@@ -118,6 +122,7 @@ let fun fact(n : int) : int =
 in get_int () |> fact
 ```
 
+---
 #### Control Flow Analysis
 
 In addition to the *type analysis*, Fhree does a step of *control-flow-analysis*, using a *fix-point* algorithm. The result of the analysis of a file *f* is writed into a file *f*.cfa.
@@ -126,6 +131,7 @@ The CFA is skipped by default (option `--no-cfa`), as you can read in the usage 
 
 There is also an option to do **only** the CFA, using Fhree as an analyzer.
 
+---
 #### Requirements
 
 Fhree is developed using OCaml and some OCaml tools for generating lexer and parser. For building the project, you must have these tools installed in your environment.
@@ -134,6 +140,7 @@ Fhree is developed using OCaml and some OCaml tools for generating lexer and par
 
 - *Menhir* once you have installed opam, just run `opam install menhir`
 
+---
 #### Usage
 
 To build *Fhree* just move in the directory and run `make`.
@@ -153,7 +160,19 @@ Options:
 ```
 
 ---
+#### Design choices:
+- An empty program is still a correct program (with `Unit` value).
+- There is a single _sequencing_ expression, that is `let ... in`.
+- The language requires **type annotation** for function parameter and return type.
+- The construct `Proj t i` takes a tuple and an integer **literal**! 
+  That's motivated by the static type checking. 
+- IO primitives are _"native"_ functions, that is: closure preloaded into the environment and defined by means of an AST node that can be instantied only by invokations to these functions.
+- At the moment, `Proj` on tuples and list operators are **not** functions!
+  They are simple expressions, and then they cannot be used as higher-order functions or passed in pipe. 
+  Again, that's motivated by the static type checking.
+  This will be updated with the future introduction of _generics_.
 
+---
 #### To Do:
 
 - Hexadecimal integers
@@ -167,6 +186,8 @@ Options:
 - REPL
 
 - Code generation for a simple compilation
+
+- Generics
 
 - ~~Uncurried functions definitions~~ 
 
