@@ -40,21 +40,23 @@ let () =
   else
     let opt = if argvLength = 3 then Sys.argv.(1) else "--no-cfa" in
     let filename = Sys.argv.(argvLength-1) in 
-    let lexbuf = Lexing.from_channel (open_in filename) in 
-      try
-        let code = Parser.main Lexer.tokenize lexbuf in 
-        match opt with
-        | "--all" -> cfa filename code; eval code
-        | "--cfa" -> cfa filename code
-        | "--no-cfa" -> eval code
-        | _ -> print_usage()
-      with
-        (* Character that doesn't match any case in lexer (i.e. '&')*)
-        | Lexing_Error(s) -> Printf.fprintf stderr "%s\n" s
-        (* A malformed sequence of tokens (i.e. "let x + 5" ) *)
-        | Parser.Error ->  Printf.fprintf stderr "Syntax error at %s.\n%!" 
-                          (string_of_position (Lexing.lexeme_start_p lexbuf))
-        (* Type Error *)
-        | Type_Error(s) -> Printf.fprintf stderr "%s\n" s
-        (* Other exceptions raised by the interpreter *)
-        | exn -> Printf.fprintf stderr "%s\n" (Printexc.to_string exn)
+    let lexbuf = ref None in  
+    try
+      lexbuf := Some (Lexing.from_channel (open_in filename));
+      let code = Parser.main Lexer.tokenize (Option.get !lexbuf) in 
+      match opt with
+      | "--all" -> cfa filename code; eval code
+      | "--cfa" -> cfa filename code
+      | "--no-cfa" -> eval code
+      | _ -> print_usage()
+    with
+      | Sys_error(s) -> Printf.fprintf stderr "%s\n" s
+      (* Character that doesn't match any case in lexer (i.e. '&')*)
+      | Lexing_Error(s) -> Printf.fprintf stderr "%s\n" s
+      (* A malformed sequence of tokens (i.e. "let x + 5" ) *)
+      | Parser.Error ->  Printf.fprintf stderr "Syntax error at %s.\n%!" 
+                        (string_of_position (Lexing.lexeme_start_p (Option.get !lexbuf)))
+      (* Type Error *)
+      | Type_Error(s) -> Printf.fprintf stderr "%s\n" s
+      (* Other exceptions raised by the interpreter *)
+      | exn -> Printf.fprintf stderr "%s\n" (Printexc.to_string exn)
