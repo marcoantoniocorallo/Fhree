@@ -61,6 +61,7 @@ rule tokenize = parse
   | "&&"              { AND }
   | "||"              { OR }
   | ','               { COMMA }
+  | ';'               { SEMICOLON }
   | '^'               { CONCAT }
   | '+'               { PLUS }
   | '-'               { MINUS }
@@ -100,4 +101,3 @@ and comments level = parse
 	|'\n'      	        { Lexing.new_line lexbuf; comments level lexbuf }
   | _					        { comments level lexbuf }
   | eof               { raise (Lexing_Error ("Non-closed comment !!!")) }
-

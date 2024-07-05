@@ -51,7 +51,7 @@
 %token AND "&&" OR "||" NOT "!" CONCAT "^"
 %token PROJ
 %token CONS_OP "::" HEAD "hd" TAIL "tl" IS_EMPTY
-%token COMMA "," COLON ":" ARROW "->"
+%token COMMA "," COLON ":" SEMICOLON ";" ARROW "->"
 %token EOF
 
 (** 
@@ -86,31 +86,30 @@ expr:
 | e1 = expr op = binop e2 = expr
     { Bop(e1, op, e2) |@| $loc }
 
-| IF guard = expr THEN e1 = expr ELSE e2 = expr      %prec prec_let
+| IF guard = expr THEN e1 = expr ELSE e2 = expr                             %prec prec_let
     { If(guard,e1,e2) |@| $loc }
 
-| LET id = ID t = option(preceded(":", ptype)) "=" e1 = expr IN e2 = expr   %prec prec_let
-    { Let(id, t, e1, e2) |@| $loc }
-
-| LET FUN f = ID l = nonempty_list(delimited("(",separated_pair(ID, ":", ptype),")")) 
-    ":" t_res = ptype "=" e1 = expr IN e2 = expr  %prec prec_let
+| LET e = let_expr IN e4 = expr                                             %prec prec_let
     { 
-      let (first_arg, types_folded, lambdas_folded) = curry l t_res e1 ($loc) in 
-      Let(f, Some (types_folded), 
-        Fun(f, first_arg, types_folded, (lambdas_folded |@| $loc)) |@| $loc,
-        e2
-      ) |@| $loc 
+      let (e1, e2, e3) = e in 
+      Let(e1, e2, e3, e4) |@| $loc
+    }
+
+| LET e = let_expr ";"
+    { 
+      let (e1, e2, e3) = e in 
+      Let(e1, e2, e3, e3) |@| $loc
     }
 
 | FUN f = ID l = nonempty_list(delimited("(",separated_pair(ID, ":", ptype),")")) 
-    ":" t_res = ptype "=" e1 = expr %prec prec_let
+    ":" t_res = ptype "=" e1 = expr                                         %prec prec_let
     { 
       let (first_arg, types_folded, lambdas_folded) = curry l t_res e1 ($loc) in 
       Fun(f, first_arg, types_folded, (lambdas_folded |@| $loc)) |@| $loc
     }
 
 | LAMBDA l = nonempty_list(delimited("(",separated_pair(ID, ":", ptype),")")) 
-    ":" t_res = ptype "->" e = expr  %prec prec_let
+    ":" t_res = ptype "->" e = expr                                         %prec prec_let
     { 
       let (first_arg, types_folded, lambdas_folded) = curry l t_res e ($loc) in 
       Fun("", first_arg, types_folded, (lambdas_folded |@| $loc)) |@| $loc 
@@ -133,7 +132,20 @@ expr:
 
 | IS_EMPTY l = simple_expr
     { IsEmpty(l) |@| $loc }
-    
+
+let_expr:
+| id = ID t = option(preceded(":", ptype)) "=" e1 = expr
+    { (id, t, e1) }
+
+| FUN f = ID l = nonempty_list(delimited("(",separated_pair(ID, ":", ptype),")")) 
+  ":" t_res = ptype "=" e1 = expr
+    { 
+      let (first_arg, types_folded, lambdas_folded) = curry l t_res e1 ($loc) in 
+      (f, Some (types_folded), 
+        Fun(f, first_arg, types_folded, (lambdas_folded |@| $loc)) |@| $loc
+      )
+    }
+
 (** simple_expr is a syntactical category used for disambiguing the grammar. *)
 simple_expr:
 | "(" ")" 

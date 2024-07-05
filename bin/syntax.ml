@@ -73,9 +73,6 @@ and ttype =
   | Tlist of ttype option                           (*  Compound type: list *)
 	[@@deriving show]
 
-and located_exp = exp located                 			(* ( exp * location ) *)
-[@@deriving show]
-
 (** Expressible and denotable values. 
  *  A runtime value is an integer, a boolean, a float, a char, a string,
  *	a tuple or a list of values or a function closure.
@@ -91,4 +88,7 @@ and value =
 	| Tuple of value list   																(* Heterogeneous fixed-length tuple of values*)
 	| ListV of value list   																(* Homogeneous list of values *)
 	[@@deriving show]
+	
+and located_exp = exp located                 			(* ( exp * location ) *)
+[@@deriving show]
 ;;

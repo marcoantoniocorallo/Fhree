@@ -1,0 +1,10 @@
+// let str = "Hello world!"; // == let str = "Hello world!" in str
+
+let fun fact (n : int) : int = 
+  if n = 0 then 
+    1
+  else
+    n * fact (n - 1)
+in 
+let f = fact 5; 
+// == ... in let f = fact 5 in f 
