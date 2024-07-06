@@ -61,7 +61,6 @@ rule tokenize = parse
   | "&&"              { AND }
   | "||"              { OR }
   | ','               { COMMA }
-  | ';'               { SEMICOLON }
   | '^'               { CONCAT }
   | '+'               { PLUS }
   | '-'               { MINUS }

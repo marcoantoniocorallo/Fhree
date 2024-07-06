@@ -51,7 +51,7 @@
 %token AND "&&" OR "||" NOT "!" CONCAT "^"
 %token PROJ
 %token CONS_OP "::" HEAD "hd" TAIL "tl" IS_EMPTY
-%token COMMA "," COLON ":" SEMICOLON ";" ARROW "->"
+%token COMMA "," COLON ":" ARROW "->"
 %token EOF
 
 (** 
@@ -93,12 +93,6 @@ expr:
     { 
       let (e1, e2, e3) = e in 
       Let(e1, e2, e3, e4) |@| $loc
-    }
-
-| LET e = let_expr ";"
-    { 
-      let (e1, e2, e3) = e in 
-      Let(e1, e2, e3, e3) |@| $loc
     }
 
 | FUN f = ID l = nonempty_list(delimited("(",separated_pair(ID, ":", ptype),")")) 
