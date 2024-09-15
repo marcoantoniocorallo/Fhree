@@ -1,3 +1,5 @@
+### Note: This repo is no longer updated. [`Trustee`](https://github.com/marcoantoniocorallo/Trustee) is an extension of Fhree, revised and improved.
+
 ![](https://github.com/marcoantoniocorallo/Fhree/blob/main/cover_1.png)
 
 ---
